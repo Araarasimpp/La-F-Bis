@@ -1,0 +1,181 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+/* ==========================================
+   CONFIGURACIÓN COMPONENTE GENERAL
+========================================== */
+ion-content {
+  --background: var(--sidebar-bg);
+  --color: var(--text-main);
+}
+
+ion-list {
+  background: transparent !important;
+  padding: 0;
+}
+
+/* Íconos y etiquetas por defecto */
+ion-item ion-icon {
+  color: var(--text-main);
+  font-size: 22px;
+  transition: color 0.2s;
+}
+
+ion-item ion-label {
+  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* ==========================================
+   👤 CABECERA DEL MENÚ (ESTILO PREMIUM)
+========================================== */
+.menu-header {
+  padding: 36px 20px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* Degradado suave usando el color principal para integrarse elegantemente */
+  background: linear-gradient(180deg, rgba(var(--ion-color-primary-rgb), 0.12) 0%, rgba(0,0,0,0) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.avatar-container {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--ion-color-primary);
+  box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+}
+
+.avatar-empty {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ion-color-primary), #7c3aed);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+}
+
+.user-meta h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.role-badge {
+  display: inline-block;
+  margin: 6px 0 0 0;
+  background: rgba(var(--ion-color-primary-rgb), 0.15);
+  color: var(--ion-color-primary);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================
+   🔗 LISTA DE OPCIONES (ELEMENTOS REACCIONABLES)
+========================================== */
+.menu-list {
+  padding-top: 12px !important;
+}
+
+ion-item {
+  --background: transparent;
+  --color: var(--text-main);
+  --border-color: transparent;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  
+  /* Incremento de tamaño para adaptabilidad móvil (hit target de 48px) */
+  min-height: 48px; 
+  margin: 6px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+/* Estado: Hover (Feedback alternativo) */
+ion-item:hover {
+  --background: rgba(var(--ion-color-primary-rgb), 0.05);
+}
+
+/* Estado: Selección Activa de Ruta (Foco del sistema) */
+ion-item.selected {
+  --background: rgba(var(--ion-color-primary-rgb), 0.12) !important;
+  font-weight: 600;
+}
+
+ion-item.selected ion-icon {
+  color: var(--ion-color-primary) !important;
+}
+
+ion-item.selected ion-label {
+  color: var(--ion-color-primary) !important;
+  font-weight: 600;
+}
+
+/* ==========================================
+   🏁 PIE DE PÁGINA (CERRAR SESIÓN AISLADO)
+========================================== */
+.menu-footer {
+  margin-top: auto; /* Empuja el botón al fondo si la pantalla es alta */
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.logout-item {
+  --background: rgba(var(--ion-color-danger-rgb), 0.08) !important;
+  margin: 0 12px;
+}
+
+.logout-item ion-icon {
+  color: var(--ion-color-danger) !important;
+}
+
+.logout-item ion-label {
+  color: var(--ion-color-danger) !important;
+  font-weight: 600;
+}
+
+.logout-item:hover {
+  --background: rgba(var(--ion-color-danger-rgb), 0.15) !important;
+}
+
+/* ==========================================
+   📱 ADAPTACIÓN DE PANTALLA MÓVIL
+========================================== */
+@media (max-width: 768px) {
+  .menu-header {
+    padding: 48px 16px 20px 16px; /* Balance de barra superior de sistemas móviles */
+  }
+
+  .avatar-container {
+    width: 72px;
+    height: 72px;
+  }
+
+  ion-item {
+    margin: 4px 10px; /* Aprovechamiento máximo del ancho del panel lateral desplegable */
+    --padding-start: 14px;
+  }
+}

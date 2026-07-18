@@ -1,0 +1,263 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import '@ionic/angular/css/palettes/dark.system.css';
+
+:root {
+  --bg-main: #f5f6fa;
+  --bg-card: #ffffff;
+  --text-main: #111;
+  --text-secondary: #777;
+  --sidebar-bg: #ffffff;
+}
+
+body.dark {
+  --bg-main: #1e1e1e;
+  --bg-card: #2c2c2c;
+  --text-main: #ffffff;
+  --text-secondary: #aaa;
+  --sidebar-bg: #2c2c2c;
+}
+
+/* 🔥 CLAVE PARA IONIC */
+ion-app,
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+ion-content {
+  --background: var(--bg-main);
+  --color: var(--text-main);
+}
+
+ion-router-outlet,
+.ion-page {
+  position: absolute !important;
+  contain: none !important;
+}
+
+.ion-page {
+  display: block !important;
+}
+
+.calendar-wrapper {
+  position: relative;
+}
+
+.calendar-popup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+}
+
+/* CONTENEDOR */
+.flatpickr-calendar {
+  width: 320px !important;
+  max-width: calc(100vw - 20px);
+  position: absolute;
+  border-radius: 20px;
+  padding: 10px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  z-index: 1000;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  left: 0;
+  right: auto;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+
+  .flatpickr-calendar {
+
+    width: calc(100vw - 20px) !important;
+
+    left: 10px !important;
+
+    right: 10px !important;
+
+    top: 50px !important;
+
+  }
+
+}
+
+/* HEADER CUSTOM */
+.flatpickr-months {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* OCULTAR FLECHAS */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  display: none !important;
+}
+
+/* MES / AÑO COMO BOTONES */
+.flatpickr-current-month {
+  display: flex;
+  gap: 10px;
+  width: 50%;
+  margin-top: 35px;
+}
+
+.flatpickr-current-month select,
+.flatpickr-current-month input {
+  background: var(--bg-color);
+  border: none;
+  border-radius: 10px;
+  width: 160px;
+  padding: 6px 10px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* DÍAS */
+.flatpickr-day {
+  width: calc(100% / 7);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px !important;
+  line-height: 38px !important; 
+  font-weight: 500;
+}
+
+/* Ocultar número duplicado */
+.flatpickr-day.hidden {
+  display: none;
+}
+
+.flatpickr-weekdays {
+  display: flex;
+}
+
+.flatpickr-days {
+  width: 100% !important;
+}
+
+.dayContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* TEXTO DÍAS */
+.flatpickr-weekday {
+  margin: 10px;
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+/* RANGO */
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: #ff3b3b !important;
+  color: white;
+}
+
+.flatpickr-day.inRange {
+  background: rgba(255, 59, 59, 0.2);
+}
+
+/* HOVER */
+.flatpickr-day:hover {
+  background: #ff3b3b;
+  color: white;
+}
+
+/* QUITAR ESTILOS FEOS */
+.flatpickr-day.today {
+  border: none;
+}
+
+/* FOOTER */
+.flatpickr-calendar::after {
+  content: "";
+  display: block;
+  height: 1px;
+  background: var(--bg-color);
+  margin: 12px 0;
+}
+
+.calendar-footer {
+  display: flex;
+  gap: 10px;
+}
+
+
+
+/* quitar días grises completamente */
+.flatpickr-day.prevMonthDay::after,
+.flatpickr-day.nextMonthDay::after {
+  content: "";
+}
+
+.calendar-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+
+  width: 28px;
+  height: 28px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--bg-color);
+  border-radius: var(--shadow);
+  color: #333;
+
+  font-size: 14px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: 0.2s;
+  z-index: 10;
+}
+
+.calendar-close-btn:hover {
+  background: #ef4444;
+  color: white;
+}

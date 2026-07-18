@@ -1,0 +1,206 @@
+<ion-content>
+
+  <div class="layout">
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <div class="topbar">
+
+        <ion-menu-button></ion-menu-button>
+
+      </div>
+
+      <div class="toolbar">
+        <!-- 🔍 BUSCADOR + ESCÁNER -->
+        <div class="group">
+            <ion-icon class="icon" name="search-outline"></ion-icon>
+            <input 
+              
+              class="filtrar"
+              type="text"
+              placeholder="Buscar producto..."
+              [(ngModel)]="busqueda"
+              (input)="filtrar()"
+
+            />
+          </div>
+          <!-- ➕ BOTÓN -->
+          <button class="fab" (click)="abrirModal()">+</button>
+          <button class="scan-btn" (click)="escanearCodigo()">
+            Escanear
+          </button>
+      </div>
+      <!-- 🛒 GRID -->
+      <div class="grid">
+
+        <div class="card" *ngFor="let p of productosFiltrados">
+
+          <img
+            *ngIf="p.imagen_url; else noImg"
+            [src]="p.imagen_url"
+          />
+
+          <ng-template #noImg>
+            <div class="no-image">Sin imagen</div>
+          </ng-template>
+
+          <h3>{{ p.elemento | uppercase }}</h3>
+          <p>{{ p.marca }}</p>
+          <p>Numero Inv: {{ p.numero_inventario }}</p>
+          <!-- 📍 Agrega esto dentro de tu tarjeta, usando 'p' en lugar de 'item' -->
+          <div class="moto" *ngIf="p.ubicacion" style="background: #e2fcd4; color: #257007; margin-top: 8px;">
+            📍 BODEGA: {{ p.ubicacion | uppercase }}
+          </div>
+
+          <div class="price">
+            {{ p.precio | currency:'':'symbol':'1.0-0' }}
+          </div>
+
+          <div class="stock" [class.low]="p.stock < 5">
+            Stock: {{ p.stock }}
+          </div>
+
+          <div class="moto">
+            {{ p.moto | uppercase}}
+          </div>
+
+          <div class="actions">
+            <button (click)="abrirModal(p)">Editar</button>
+            <button class="danger" (click)="eliminar(p.id)">Eliminar</button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 🧾 MODAL -->
+      <div class="modal" *ngIf="showModal">
+
+        <div class="modal-content">
+
+          <h2>{{ editando ? 'Editar producto' : 'Nuevo producto' }}</h2>
+
+          <div class="input-group">
+              <label>N° Inventario</label>
+              <input [(ngModel)]="form.numero_inventario">
+            </div>
+
+            <div class="input-group">
+              <label>Código de barras</label>
+              <input [(ngModel)]="form.codigo_barras">
+            </div>
+
+            <div class="input-group">
+              <label>Código interno</label>
+              <input [(ngModel)]="form.codigo">
+            </div>
+
+            <div class="input-group">
+              <label>Producto</label>
+              <input [(ngModel)]="form.elemento">
+            </div>
+
+            <div class="input-group">
+              <label>Ubicación (Bodega / Estante)</label>
+              <input 
+                type="text" 
+                placeholder="Ej: Pasillo A - Estante 2" 
+                [(ngModel)]="form.ubicacion"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>Marca</label>
+              <input [(ngModel)]="form.marca">
+            </div>
+
+            <div class="input-group">
+              <label>Proveedor</label>
+              <input [(ngModel)]="form.proveedor">
+            </div>
+
+            <div class="input-group">
+              <label>Moto</label>
+              <input [(ngModel)]="form.moto">
+            </div>
+
+            <div class="input-group">
+              <label>Costo</label>
+              <input
+                type="text"
+                placeholder="Costo"
+                [value]="formatearNumero(form.costo)"
+                (input)="form.costo = parseNumero($event.target.value); calcularPrecio()"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>% Ganancia</label>
+              <input type="number" [(ngModel)]="form.porcentaje_ganancia" (input)="calcularPrecio()">
+            </div>
+
+            <div class="input-group">
+              <label>Precio</label>
+              <input
+                type="text"
+                placeholder="Precio"
+                [value]="formatearNumero(form.precio)"
+                (input)="form.precio = parseNumero($event.target.value)"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>Stock</label>
+              <input type="number" [(ngModel)]="form.stock">
+            </div>
+
+            <div class="input-group">
+              <label>Categoría</label>
+              <select [(ngModel)]="form.categoria_id">
+                <option [ngValue]="null">Seleccionar</option>
+                <option *ngFor="let cat of categorias" [value]="cat.id">
+                  {{ cat.nombre }}
+                </option>
+              </select>
+            </div>
+
+          <!-- 📷 IMAGEN -->
+          <div class="image-buttons">
+
+            <button type="button" (click)="tomarFoto()">
+              Tomar foto
+            </button>
+
+            <button type="button" (click)="elegirGaleria()">
+              Galería
+            </button>
+
+          </div>
+
+          <input
+            hidden
+            type="file"
+            #fileInput
+            (change)="onFileSelected($event)"
+          >
+
+          <div class="image-preview" *ngIf="previewImage">
+            <img [src]="previewImage" />
+          </div>
+
+          <!-- BOTONES -->
+          <div class="modal-actions">
+            <button (click)="guardarProducto()">Guardar</button>
+            <button (click)="cerrarModal()">Cancelar</button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>

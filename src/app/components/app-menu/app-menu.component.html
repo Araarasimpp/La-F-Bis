@@ -1,0 +1,85 @@
+<ion-content class="menu-content">
+
+  <div class="menu-header">
+    <div class="avatar-container">
+      <img
+        *ngIf="auth.avatarUrl; else inicialAvatar"
+        [src]="auth.avatarUrl"
+        alt="Avatar"
+        class="avatar-img">
+
+      <ng-template #inicialAvatar>
+        <div class="avatar-empty">
+          {{ auth.inicial.toUpperCase() }}
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="user-meta">
+      <h2>{{ auth.nombre || 'Usuario' }}</h2>
+      <p class="role-badge">{{ auth.rol | titlecase }}</p>
+    </div>
+  </div>
+
+  <ion-list lines="none" class="menu-list">
+
+    <ion-menu-toggle autoHide="true" *ngIf="auth.canManageUsers()">
+      <ion-item button (click)="go('/home')" detail="false" routerLinkActive="selected">
+        <ion-icon slot="start" name="home-outline"></ion-icon>
+        <ion-label>Inicio</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+
+    <ion-menu-toggle autoHide="true" *ngIf="auth.canManageInventory()">
+      <ion-item button (click)="go('/inventory')" detail="false" routerLinkActive="selected">
+        <ion-icon slot="start" name="cube-outline"></ion-icon>
+        <ion-label>Inventario</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+
+    <ion-menu-toggle autoHide="true" *ngIf="auth.canSell()">
+      <ion-item button (click)="go('/ventas')" detail="false" routerLinkActive="selected">
+        <ion-icon slot="start" name="cash-outline"></ion-icon>
+        <ion-label>Ventas</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+
+    <ion-menu-toggle autoHide="true" *ngIf="auth.canManageUsers()">
+      <ion-item button (click)="go('/usuarios')" detail="false" routerLinkActive="selected">
+        <ion-icon slot="start" name="people-outline"></ion-icon>
+        <ion-label>Usuarios</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+
+    <ion-menu-toggle autoHide="true" *ngIf="auth.canViewHistory()">
+      <ion-item button (click)="go('/historial-ventas')" detail="false" routerLinkActive="selected">
+        <ion-icon slot="start" name="receipt-outline"></ion-icon>
+        <ion-label>Historial</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+
+    <ion-menu-toggle autoHide="true">
+      <ion-item button (click)="go('/settings')" detail="false" routerLinkActive="selected">
+        <ion-icon slot="start" name="settings-outline"></ion-icon>
+        <ion-label>Configuración</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+
+    <ion-menu-toggle autoHide="true" *ngIf="auth.canManageUsers()">
+      <ion-item button (click)="go('/historial-moto')" detail="false" routerLinkActive="selected">
+        <ion-icon slot="start" name="bicycle-outline"></ion-icon>
+        <ion-label>Historial de motos</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+  </ion-list>
+
+  <div class="menu-footer">
+    <ion-menu-toggle autoHide="true">
+      <ion-item button (click)="logout()" class="logout-item" detail="false">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        <ion-label>Cerrar sesión</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+  </div>
+
+</ion-content>

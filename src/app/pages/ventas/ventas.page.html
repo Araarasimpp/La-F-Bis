@@ -1,0 +1,147 @@
+<ion-content>
+
+  <div class="main">
+    <div class="topbar">
+
+      <ion-menu-button></ion-menu-button>
+
+    </div>
+  
+  <div class="layout">
+
+    <!-- MAIN -->
+    <div class="main ventas-container">
+
+      <!-- 🧾 IZQUIERDA → PRODUCTOS -->
+      <div class="productos">
+
+        <!-- 🔍 BUSCADOR -->
+        <div class="group">
+          <ion-icon class="icon" name="search-outline"></ion-icon>
+          <input
+            class="filtrar"
+            placeholder="Buscar producto..."
+            [(ngModel)]="busqueda">
+          
+        </div>
+        <!-- GRID PRODUCTOS -->
+        <div class="grid">
+
+          <div
+            class="card"
+            *ngFor="let p of productosFiltrados"
+            (click)="agregarAlCarrito(p)"
+          >
+            <img
+              *ngIf="p.imagen_url"
+              [src]="p.imagen_url"
+            />
+
+            <div class="info">
+              <h3>{{ p.elemento | uppercase }}</h3>
+              <p>{{ p.marca }}</p>
+              <p>Numero Inv: {{ p.numero_inventario }}</p>
+              <p>{{p.moto}}</p>
+              <!-- 📍 Agrega esto dentro de tu tarjeta, usando 'p' en lugar de 'item' -->
+              <div class="moto" *ngIf="p.ubicacion" style="background: #e2fcd4; color: #257007; margin-top: 8px;">
+                📍 BODEGA: {{ p.ubicacion | uppercase }}
+              </div>
+
+              <div class="details">
+                <span class="precio">
+                  {{ p.precio | currency:'' }}
+                </span>
+
+                <span
+                  class="stock"
+                  [class.low]="p.stock <= 5"
+                >
+                  {{ p.stock }}
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 🛒 DERECHA → CARRITO -->
+      <div class="carrito">
+
+        <h2>Carrito</h2>
+
+        <div class="items">
+
+          <div class="item" *ngFor="let item of carrito">
+
+            <div class="info">
+              <h4>{{ item.elemento }}</h4>
+              <p>{{ item.precio | currency:'COP' }}</p>
+            </div>
+
+            <div class="controls">
+              <button (click)="disminuir(item)">−</button>
+              <span>{{ item.cantidad }}</span>
+              <button (click)="aumentar(item)">+</button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- TOTAL -->
+        <div class="total">
+          <h4>Total</h4>
+          <h3>{{ total | currency:'' }}</h3>
+        </div>
+
+        <div class="pago">
+                           
+
+            <select class="metodopago-select" [(ngModel)]="metodoPago">
+              <option value="efectivo">Efectivo</option>
+              <option value="transferencia">Transferencia</option>
+            </select>
+
+
+          <div *ngIf="metodoPago === 'efectivo'">
+            <input
+              class="pago-input"
+              type="number"
+              placeholder="Pago recibido"
+              [(ngModel)]="pagoRecibido"
+              (ionInput)="calcularCambio()">
+              
+
+            <p>Cambio: {{ cambio | currency:'' }}</p>
+          </div>
+
+        </div>
+
+        <!-- BOTÓN -->
+        <button class="btn-vender" (click)="vender()">
+          Finalizar venta
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Botón flotante móvil -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-carrito">
+    <ion-fab-button (click)="abrirCarrito()">
+      <ion-icon name="cart-outline"></ion-icon>
+      
+      <ion-badge color="danger" class="badge-carrito" *ngIf="carrito.length > 0">
+        {{ carrito.length }}
+      </ion-badge>
+    </ion-fab-button>
+  </ion-fab>
+
+  </div>
+
+  
+
+  </div>
+</ion-content>

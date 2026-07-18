@@ -1,0 +1,127 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Carrito</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()" color="medium">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="contenido">
+
+    <div *ngIf="ventas.carrito.length === 0" class="vacio">
+      El carrito está vacío
+    </div>
+
+    <div class="items-lista">
+      <ion-card *ngFor="let item of ventas.carrito" class="card-carrito">
+        <ion-card-content class="item-layout">
+          <div class="info-item">
+            <h2>{{item.elemento}}</h2>
+            <p class="precio">${{item.precio * item.cantidad | number}}</p>
+          </div>
+
+          <div class="controles-cantidad">
+            <ion-button color="danger" size="small" (click)="ventas.disminuir(item)">-</ion-button>
+            <strong>{{item.cantidad}}</strong>
+            <ion-button color="success" size="small" (click)="ventas.aumentar(item)">+</ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <ion-card class="card-total">
+      <ion-card-content>
+        <h2>Total</h2>
+        <h1>${{ventas.total | number}}</h1>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="card-metodo">
+      <ion-card-content>
+        <h2>Método de pago</h2>
+        <ion-segment [(ngModel)]="ventas.metodoPago" mode="ios">
+          <ion-segment-button value="efectivo">
+            <ion-label>Efectivo</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="transferencia">
+            <ion-label>Transferencia</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="ventas.metodoPago == 'efectivo'" class="card-efectivo">
+      <ion-card-content>
+        <ion-item lines="none" class="input-item">
+          <ion-label position="stacked">Pago recibido</ion-label>
+          <ion-input 
+            type="number" 
+            [(ngModel)]="ventas.pagoRecibido" 
+            (ionInput)="ventas.calcularCambio()" 
+            (input)="ventas.calcularCambio()" 
+            placeholder="Ingrese monto">
+          </ion-input>
+        </ion-item>
+
+        <div class="cambio-container">
+          <h2>Cambio</h2>
+          <h1>${{ventas.cambio | number}}</h1>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="card-taller">
+      <ion-card-content>
+
+        <h2>🏍️ Orden de Taller (Opcional)</h2>
+
+        <ion-item lines="none" class="input-item">
+          <ion-label position="stacked">Placa de la moto</ion-label>
+          <ion-input
+            type="text"
+            placeholder="Ej: KUX84E"
+            [(ngModel)]="ventas.placaMoto"
+            style="text-transform: uppercase;">
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="checkbox-item">
+          <ion-checkbox
+            slot="start"
+            [(ngModel)]="ventas.esServicioTaller">
+          </ion-checkbox>
+
+          <ion-label class="checkbox-label">
+            Incluye servicio
+          </ion-label>
+        </ion-item>
+
+        <ion-item
+          *ngIf="ventas.esServicioTaller"
+          lines="none"
+          class="input-item">
+
+          <ion-label position="stacked">
+            Diagnóstico o trabajo realizado
+          </ion-label>
+
+          <ion-textarea
+            autoGrow="true"
+            rows="3"
+            placeholder="Describa el trabajo realizado..."
+            [(ngModel)]="ventas.descripcionMecanico">
+          </ion-textarea>
+
+        </ion-item>
+
+      </ion-card-content>
+    </ion-card>
+
+    <ion-button expand="block" class="btn-finalizar" (click)="finalizarVenta()">
+      Finalizar venta
+    </ion-button>
+
+  </div>
+</ion-content>

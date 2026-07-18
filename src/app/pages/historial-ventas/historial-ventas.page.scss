@@ -1,0 +1,324 @@
+/* ==========================================
+   CONFIGURACIÓN GENERAL
+========================================== */
+.layout {
+  display: flex;
+  min-height: 100%;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.header-seccion h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.header-seccion p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* CONTAINER PRINCIPAL */
+.main {
+  width: 100%;
+  min-height: 100%;
+  padding: 24px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  overflow-y: auto;
+}
+
+.topbar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* INDICADORES CLAVE (KPIs) */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.kpi {
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.kpi span {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.kpi h2 {
+  margin: 8px 0 0 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* FILTROS E INPUTS DE BÚSQUEDA */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  font-size: 18px;
+}
+
+.filters input {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+}
+
+.search-wrapper input {
+  padding-left: 42px;
+}
+
+.date-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.date-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date-input label {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  padding-left: 4px;
+}
+
+/* ==========================================
+   🧱 LISTA DE HISTORIAL Y TARJETAS
+========================================== */
+.ventas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.venta-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 16px;
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.venta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.left-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.fecha {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.right-info {
+  text-align: right;
+}
+
+.monto-total {
+  margin: 4px 0 0 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.metodo {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.metodo.efectivo {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.info-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* PRODUCTOS INTERNOS */
+.productos {
+  margin-top: 14px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.producto {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.producto:last-child {
+  border-bottom: none;
+}
+
+.producto-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.producto-left strong {
+  font-size: 13px;
+}
+
+.producto-left small {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.producto-total {
+  font-size: 13px;
+}
+
+/* INFO DE EFECTIVO */
+.extra-info {
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.efectivo-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.efectivo-row strong {
+  color: var(--text-main);
+}
+
+.efectivo-row .cambio-txt {
+  color: #22c55e;
+}
+
+/* BOTONES DE ACCIÓN */
+.footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.print-btn,
+.delete-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  transition: opacity 0.2s;
+}
+
+.print-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.print-btn:active,
+.delete-btn:active {
+  opacity: 0.7;
+}
+
+/* ==========================================
+   📱 ESTILOS MÓVILES EXCLUSIVOS
+========================================== */
+@media (max-width: 768px) {
+  .main {
+    padding: 16px;
+  }
+
+  .kpis {
+    gap: 12px;
+  }
+
+  .kpi h2 {
+    font-size: 22px; /* Números un poco más contenidos en móvil */
+  }
+
+  /* Filtros organizados en bloque */
+  .filters {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .venta-card {
+    padding: 14px;
+    margin-top: 0; /* Limpiamos márgenes excesivos */
+  }
+
+  .monto-total {
+    font-size: 18px;
+  }
+}

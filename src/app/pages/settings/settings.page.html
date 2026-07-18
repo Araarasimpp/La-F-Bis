@@ -1,0 +1,91 @@
+<ion-content>
+  <div class="layout">
+
+    <div class="main">
+
+      <div class="topbar">
+        <ion-menu-button></ion-menu-button>
+      </div>
+
+      <div class="header-seccion">
+        <h1>Configuración</h1>
+        <p>Personaliza tu sistema</p>
+      </div>
+
+      <div class="grid">
+
+        <div class="card">
+          <div class="card-title">
+            <ion-icon name="person-outline" color="primary"></ion-icon>
+            Perfil
+          </div>
+
+          <div class="avatar-section">
+            <div class="avatar-wrapper">
+              <img
+                *ngIf="profile.avatar_url"
+                [src]="profile.avatar_url"
+                class="avatar">
+
+              <div
+                *ngIf="!profile.avatar_url"
+                class="avatar empty">
+                {{ profile.username?.charAt(0)?.toUpperCase() || '?' }}
+              </div>
+            </div>
+
+            <label class="upload-btn">
+              <ion-icon name="cloud-upload-outline"></ion-icon>
+              <span>Cambiar avatar</span>
+              <input
+                type="file"
+                hidden
+                (change)="onAvatarSelected($event)">
+            </label>
+          </div>
+
+          <div class="input-group">
+            <label>Nombre de usuario</label>
+            <input
+              type="text"
+              placeholder="Username"
+              [(ngModel)]="profile.username">
+          </div>
+
+          <div class="input-group">
+            <label>Nombre del negocio</label>
+            <input
+              type="text"
+              placeholder="Nombre negocio"
+              [(ngModel)]="profile.nombre_negocio">
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <ion-icon name="settings-outline" color="primary"></ion-icon>
+            Sistema
+          </div>
+
+          <div class="switch-row">
+            <div class="switch-info">
+              <span>Imprimir automático</span>
+              <p>Generar ticket de venta inmediatamente</p>
+            </div>
+            <ion-toggle [(ngModel)]="settings.ticket_auto" mode="ios"></ion-toggle>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="action-footer">
+        <button class="save-btn" (click)="guardar()">
+          <ion-icon name="save-outline" *ngIf="!loading"></ion-icon>
+          <span>{{ loading ? 'Guardando...' : 'Guardar cambios' }}</span>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</ion-content>

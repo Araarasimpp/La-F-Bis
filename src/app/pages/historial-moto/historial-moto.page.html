@@ -1,0 +1,69 @@
+<ion-content>
+
+  <div class="layout">
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- TOPBAR (Menú Hamburguesa) -->
+      <div class="topbar">
+        <ion-menu-button></ion-menu-button>
+      </div>
+
+      <!-- NAVBAR / TOOLBAR (Buscador por Placa) -->
+      <div class="toolbar">
+        <div class="group">
+          <ion-icon class="icon" name="search-outline"></ion-icon>
+          <input 
+            class="filtrar"
+            type="text"
+            placeholder="Digitar placa de la moto (Ej: KUX84E)..."
+            [(ngModel)]="placaBuscar"
+            (keyup.enter)="buscarHistorial()"
+          />
+        </div>
+        <button class="scan-btn" (click)="buscarHistorial()">
+          Buscar
+        </button>
+      </div>
+
+      <!-- 🔄 INDICADOR DE CARGA -->
+      <div class="loading-state" *ngIf="buscando" style="text-align: center; padding: 20px;">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p>Buscando historial clínico...</p>
+      </div>
+
+      <!-- 🏍️ GRID / LISTADO DE HISTORIALES -->
+      <div class="grid" *ngIf="historiales.length > 0 && !buscando">
+
+        <div class="card" *ngFor="let h of historiales">
+          
+          <div class="card-header-date">
+            <h3>📅 {{ h.fecha | date:'dd/MM/yyyy' }}</h3>
+            <p>{{ h.fecha | date:'hh:mm a' }}</p>
+          </div>
+
+          <p><strong>Mano de Obra / Servicio:</strong></p>
+          <p class="service-desc">{{ h.descripcion_servicio }}</p>
+
+          <!-- Si el servicio incluyó repuestos de la bodega -->
+          <div class="repuestos-taller" *ngIf="h.repuestos_utilizados?.length > 0">
+            <p><strong>Partes Instaladas:</strong></p>
+            <div class="moto" *ngFor="let repuesto of h.repuestos_utilizados">
+              {{ repuesto.cantidad }}x {{ repuesto.elemento | uppercase }}
+            </div>
+          </div>
+
+          <div class="price">
+            Total: {{ h.total_servicio | currency:'':'symbol':'1.0-0' }}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>

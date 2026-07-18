@@ -1,0 +1,128 @@
+/* MAIN */
+.main {
+  width: 100%;
+  min-height: 100%;
+  padding: 24px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  overflow-y: auto;
+  position: relative;
+}
+
+.topbar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* TOOLBAR (Buscador) */
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  padding: 8px 12px;
+  flex: 1;
+}
+
+.group .icon {
+  font-size: 20px;
+  margin-right: 8px;
+  color: var(--text-muted, #888888);
+}
+
+.filtrar {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+  color: var(--text-main);
+}
+
+.scan-btn {
+  background: var(--button-primary, #3880ff);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  height: 42px;
+}
+
+/* GRID Y CARDS (Igual a tus productos) */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.card {
+  background: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color, #ebebeb);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-header-date {
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-main);
+}
+
+.card p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted, #666666);
+}
+
+.service-desc {
+  background: var(--bg-main, #f9f9f9);
+  padding: 8px;
+  border-radius: 6px;
+  font-style: italic;
+}
+
+/* Formato tipo Badge/Etiqueta que usas en Moto */
+.moto {
+  display: inline-block;
+  background: var(--bg-tag, #e8f0fe);
+  color: var(--text-tag, #1a73e8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 4px;
+  margin-right: 4px;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--color-success, #2dd36f);
+  margin-top: auto; /* Empuja el precio al fondo de la tarjeta */
+  text-align: right;
+}

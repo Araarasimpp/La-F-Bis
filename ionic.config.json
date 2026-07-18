@@ -1,0 +1,7 @@
+{
+  "name": "repuestosAppClean",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

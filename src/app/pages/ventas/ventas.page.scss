@@ -1,0 +1,469 @@
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+ion-content {
+  --background: var(--bg-main);
+}
+
+ion-app {
+  background: var(--bg-main);
+}
+
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* MAIN CONTAINER */
+.main {
+  width: 100%;
+  min-height: 100%;
+  padding: 24px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  overflow-y: auto;
+  position: relative;
+}
+
+.topbar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ventas-container {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+}
+
+/* 📦 SECCIÓN PRODUCTOS */
+.productos {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+  overflow-y: auto;
+  margin-top: 30px;
+}
+
+/* 🧱 CARDS PRODUCTOS */
+.card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.info {
+  margin-top: 10px;
+}
+
+.info h3 {
+  font-size: 14px;
+  margin: 0;
+}
+
+.info p {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.details {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.precio {
+  font-weight: bold;
+}
+
+.stock {
+  font-size: 12px;
+}
+
+.stock.low {
+  color: red;
+}
+
+/* 🛒 CARRITO LADO ESCRITORIO (PC) */
+.carrito {
+  flex: 1;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.items, .items-modal {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controls button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: #333;
+  color: white;
+}
+
+/* TOTAL & PAGO PC */
+.total {
+  border-top: 1px solid #333;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.btn-vender {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #00c853;
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-vender:hover {
+  transform: scale(1.03);
+}
+
+/* BUSCADOR DE PRODUCTOS */
+.group {
+  display: flex;
+  line-height: 28px;
+  align-items: center;
+  position: relative;
+  max-width: 190px;
+}
+
+.filtrar {
+  width: 100%;
+  height: 40px;
+  padding: 0 1rem 0 2.5rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  background-color: var(--bg-card);
+  color: #0d0c22;
+  transition: 0.3s ease;
+}
+
+.filtrar:focus, .filtrar:hover {
+  border-color: rgba(247, 127, 0, 0.4);
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgb(247 127 0 / 10%);
+}
+
+.icon {
+  position: absolute;
+  left: 1rem;
+  color: #9e9ea7;
+  width: 1rem;
+  height: 1rem;
+}
+
+.pago-input, .metodopago-select {
+  border: none;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: var(--bg-card);
+  transition: 0.3s;
+  margin-top: 10px;
+  width: 100%;
+}
+
+/* ==========================================
+   🏍️ ESTILOS COMPARTIDOS SECCIÓN TALLER
+========================================== */
+.taller-card {
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 16px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.taller-title {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.taller-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.taller-input-placa {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-main);
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.taller-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.taller-checkbox-container input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.taller-checkbox-container label {
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.taller-textarea-diagnostico {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 13px;
+  resize: none;
+}
+
+/* ==========================================
+   📱 ESTILOS ESPECÍFICOS E INTERFAZ MÓVIL
+========================================== */
+.fab-carrito {
+  display: none;
+}
+
+/* Contenedor principal dentro del modal */
+.modal-carrito-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #f4f5f7; /* Fondo gris claro premium de la captura */
+  padding: 16px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+}
+
+.modal-header h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0;
+  color: #333;
+}
+
+.btn-cerrar-modal {
+  background: transparent;
+  border: none;
+  color: #9e9ea7;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modal-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+/* Tarjetas blancas idénticas a tu diseño móvil */
+.mobile-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.total-mobile-card p {
+  margin: 0;
+  font-size: 12px;
+  color: #8e8e93;
+  font-weight: 600;
+}
+
+.total-mobile-card h3 {
+  margin: 4px 0 0 0;
+  font-size: 28px;
+  font-weight: bold;
+  color: #000;
+}
+
+.label-title {
+  font-size: 13px;
+  color: #8e8e93;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.margin-top-sm {
+  margin-top: 12px;
+}
+
+.metodopago-select-mobile, .pago-input-mobile {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f4f5f7;
+  border: none;
+  font-size: 15px;
+  outline: none;
+}
+
+.taller-card-mobile {
+  border: none;
+}
+
+.modal-footer {
+  padding-top: 10px;
+}
+
+.btn-vender-mobile {
+  width: 100%;
+  padding: 16px;
+  background: #00c853; /* Verde vibrante */
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+}
+
+/* Animaciones */
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes pulsoSutil {
+  0% { box-shadow: 0 8px 24px rgba(59, 180, 242, 0.4); }
+  50% { box-shadow: 0 12px 30px rgba(59, 180, 242, 0.7); }
+  100% { box-shadow: 0 8px 24px rgba(59, 180, 242, 0.4); }
+}
+
+/* MEDIA QUERY DISPOSITIVOS MÓVILES */
+@media (max-width: 768px) {
+  .fab-carrito {
+    display: block;
+    margin-bottom: 95px;
+    margin-right: 20px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+
+  .fab-carrito ion-fab-button {
+    --background: #3bb4f2;
+    --color: #ffffff;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    animation: pulsoSutil 2.5s infinite ease-in-out;
+  }
+
+  .badge-carrito {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    z-index: 10;
+    --background: #ff3b30;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #3bb4f2;
+  }
+
+  .main {
+    padding: 12px;
+  }
+
+  .ventas-container {
+    display: block;
+  }
+
+  .productos {
+    width: 100%;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+  }
+
+  .card img {
+    height: 140px;
+  }
+
+  /* Oculta el contenedor lateral de PC para que no rompa el diseño */
+  .carrito {
+    display: none;
+  }
+
+  .group {
+    max-width: 100%;
+  }
+}

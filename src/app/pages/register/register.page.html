@@ -1,0 +1,26 @@
+<div class="container">
+ <div class="ring">
+    <i style="--clr: #00ff0a"></i>
+    <i style="--clr: #ff0057"></i>
+    <i style="--clr: #f7f309"></i>
+      <div class="register">
+        <h2>Register</h2>
+        <div class="inputbox">
+          <ion-input placeholder="Correo" [(ngModel)]="email"></ion-input>
+        </div>
+        <div class="inputbox">
+          <ion-input type="password" placeholder="Contraseña" [(ngModel)]="password"></ion-input>
+        </div>
+        <div class="inputbox">
+          <ion-button expand="block" class="btn-gradient" (click)="register()">
+            Registrarse
+          </ion-button>   
+        </div>
+        <div class="links">
+          <p class="link" (click)="goLogin()">
+            ¿Ya tienes cuenta? Inicia sesión
+          </p>
+        </div>
+      </div>
+  </div>
+</div> 
