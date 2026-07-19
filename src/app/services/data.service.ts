@@ -188,6 +188,14 @@ export class DataService {
     producto.porcentaje_ganancia =
       costo > 0 ? ((precio - costo) / costo) * 100 : 0;
 
+    if (!producto.codigo_barras || producto.codigo_barras.trim() === '') {
+    producto.codigo_barras = null;
+    }
+
+    if (!producto.imagen_url || producto.imagen_url.trim() === '') {
+      producto.imagen_url = null;
+    }
+
     delete producto.categorias_repuestos; // 🔥 ELIMINAR RELACIÓN ANIDADA
 
     const { error } = await this.supabaseService.supabase
@@ -220,6 +228,15 @@ export class DataService {
 
     producto.porcentaje_ganancia =
       costo > 0 ? ((precio - costo) / costo) * 100 : 0;
+
+    // 🔥 FIX: convertir strings vacíos en null para no violar UNIQUE constraints
+      if (!producto.codigo_barras || producto.codigo_barras.trim() === '') {
+        producto.codigo_barras = null;
+      }
+
+      if (!producto.imagen_url || producto.imagen_url.trim() === '') {
+        producto.imagen_url = null;
+      }
 
     // 🔥 SOLUCIÓN AL BUG: Si el id viene nulo, indefinido o vacío, lo eliminamos del objeto
     if (!producto.id) {
