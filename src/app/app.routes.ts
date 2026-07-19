@@ -94,6 +94,24 @@ export const routes: Routes = [
     }
   },
 
+  // CATEGORÍAS → ADMIN + INVENTARIO
+  {
+    path: 'categorias',
+
+    loadComponent: () =>
+      import('./pages/categorias/categorias.page')
+        .then(m => m.CategoriasPage),
+
+    canActivate: [roleGuard],
+
+    data: {
+      roles: [
+        'administrador',
+        'inventario'
+      ]
+    }
+  },
+
   // SETTINGS → TODOS LOS ROLES
   {
     path: 'settings',

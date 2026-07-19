@@ -43,6 +43,10 @@ export class InventoryPage implements OnInit, OnDestroy {
   productos: any[] = [];
   productosFiltrados: any[] = [];
   categorias: any[] = [];
+  // 🔍 COMBOBOX DE CATEGORÍA (en el modal)
+  categoriaBusqueda = '';
+  categoriasBusquedaResultados: any[] = [];
+  mostrarDropdownCategorias = false;
 
   // 🔍 filtros
   busqueda = '';
@@ -106,6 +110,44 @@ export class InventoryPage implements OnInit, OnDestroy {
     const ganancia = Number(this.form.porcentaje_ganancia) || 0;
 
     this.form.precio = costo + (costo * ganancia) / 100;
+  }
+
+  // =========================
+  // 🔍 COMBOBOX CATEGORÍA
+  // =========================
+
+  filtrarCategoriasBusqueda() {
+    const texto = this.categoriaBusqueda.toLowerCase().trim();
+
+    this.categoriasBusquedaResultados = !texto
+      ? this.categorias
+      : this.categorias.filter(c =>
+          c.nombre?.toLowerCase().includes(texto)
+        );
+  }
+
+  abrirDropdownCategorias() {
+    this.filtrarCategoriasBusqueda();
+    this.mostrarDropdownCategorias = true;
+  }
+
+  cerrarDropdownCategorias() {
+    // 🔥 delay para que el (mousedown) de la opción alcance a dispararse antes del blur
+    setTimeout(() => {
+      this.mostrarDropdownCategorias = false;
+    }, 150);
+  }
+
+  seleccionarCategoria(categoria: any) {
+    this.form.categoria_id = categoria.id;
+    this.categoriaBusqueda = categoria.nombre;
+    this.mostrarDropdownCategorias = false;
+  }
+
+  quitarCategoria() {
+    this.form.categoria_id = null;
+    this.categoriaBusqueda = '';
+    this.mostrarDropdownCategorias = false;
   }
 
   // =========================
@@ -194,6 +236,7 @@ export class InventoryPage implements OnInit, OnDestroy {
       .select('*');
 
     this.categorias = data || [];
+    this.categoriasBusquedaResultados = this.categorias;
   }
 
   abrirModal(producto?: any) {
@@ -209,8 +252,13 @@ export class InventoryPage implements OnInit, OnDestroy {
       };
 
       this.previewImage = producto.imagen_url;
+
+      // 🔥 precargar el texto de la categoría actual
+      this.categoriaBusqueda = producto.categorias_repuestos?.nombre || '';
+
     } else {
       this.form = this.getEmptyForm();
+      this.categoriaBusqueda = '';   // 🔥 nuevo
 
       if (producto?.codigo_barras) {
         this.form.codigo_barras = producto.codigo_barras;

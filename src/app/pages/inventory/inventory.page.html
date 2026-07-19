@@ -155,14 +155,43 @@
               <input type="number" [(ngModel)]="form.stock">
             </div>
 
-            <div class="input-group">
+            <div class="input-group categoria-combo">
               <label>Categoría</label>
-              <select [(ngModel)]="form.categoria_id">
-                <option [ngValue]="null">Seleccionar</option>
-                <option *ngFor="let cat of categorias" [value]="cat.id">
-                  {{ cat.nombre }}
-                </option>
-              </select>
+
+              <div class="combo-wrapper">
+                
+
+                <input
+                  type="text"
+                  placeholder="Buscar categoría..."
+                  [(ngModel)]="categoriaBusqueda"
+                  (input)="filtrarCategoriasBusqueda()"
+                  (focus)="abrirDropdownCategorias()"
+                  (blur)="cerrarDropdownCategorias()"
+                />
+
+                <div class="combo-dropdown" *ngIf="mostrarDropdownCategorias">
+
+                  <div
+                    class="combo-option combo-clear"
+                    *ngIf="form.categoria_id"
+                    (mousedown)="quitarCategoria()">
+                    ✖ Quitar categoría
+                  </div>
+
+                  <div
+                    class="combo-option"
+                    *ngFor="let cat of categoriasBusquedaResultados"
+                    (mousedown)="seleccionarCategoria(cat)">
+                    {{ cat.nombre }}
+                  </div>
+
+                  <div class="combo-empty" *ngIf="categoriasBusquedaResultados.length === 0">
+                    Sin resultados
+                  </div>
+
+                </div>
+              </div>
             </div>
 
           <!-- 📷 IMAGEN -->

@@ -71,6 +71,13 @@
         <ion-label>Historial de motos</ion-label>
       </ion-item>
     </ion-menu-toggle>
+
+    <ion-menu-toggle autoHide="true" *ngIf="auth.canManageInventory()">
+      <ion-item button (click)="go('/categorias')" detail="false" routerLinkActive="selected">
+        <ion-icon slot="start" name="pricetag-outline"></ion-icon>
+        <ion-label>Categorías</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
   </ion-list>
 
   <div class="menu-footer">

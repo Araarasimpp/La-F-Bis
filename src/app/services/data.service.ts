@@ -300,6 +300,60 @@ export class DataService {
     return data;
   }
 
+  // ==========================================
+  // 📂 MÓDULO: CATEGORÍAS DE REPUESTOS
+  // ==========================================
+
+  async getCategorias() {
+    const { data, error } = await this.supabaseService.supabase
+      .from('categorias_repuestos')
+      .select('*')
+      .order('nombre', { ascending: true });
+
+    if (error) {
+      console.error('Error obteniendo categorías:', error);
+      return [];
+    }
+    return data;
+  }
+
+  async crearCategoria(nombre: string) {
+    const { data, error } = await this.supabaseService.supabase
+      .from('categorias_repuestos')
+      .insert([{ nombre: nombre.trim() }])
+      .select();
+
+    if (error) {
+      console.error('Error creando categoría:', error);
+      throw error;
+    }
+    return data;
+  }
+
+  async actualizarCategoria(id: string, nombre: string) {
+    const { error } = await this.supabaseService.supabase
+      .from('categorias_repuestos')
+      .update({ nombre: nombre.trim() })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error actualizando categoría:', error);
+      throw error;
+    }
+  }
+
+  async eliminarCategoria(id: string) {
+    const { error } = await this.supabaseService.supabase
+      .from('categorias_repuestos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error eliminando categoría:', error);
+      throw error;
+    }
+  }
+
   async getVentas(fechaInicio?: string, fechaFin?: string) {
 
     let query = this.supabaseService.supabase

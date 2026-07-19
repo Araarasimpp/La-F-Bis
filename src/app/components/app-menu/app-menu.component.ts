@@ -21,7 +21,8 @@ import {
   receiptOutline,
   settingsOutline,
   bicycleOutline,
-  logOutOutline
+  logOutOutline,
+  pricetagOutline
 } from 'ionicons/icons';
 
 import { AuthService } from '../../services/auth.service';
@@ -56,7 +57,8 @@ export class AppMenuComponent {
       receiptOutline,
       bicycleOutline,
       settingsOutline,
-      logOutOutline
+      logOutOutline,
+      pricetagOutline
     });
 
   }

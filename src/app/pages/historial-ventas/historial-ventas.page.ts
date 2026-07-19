@@ -139,6 +139,7 @@ export class HistorialVentasPage implements OnInit {
           cambio: v.cambio,
 
           total: 0,
+          costo: 0,
 
           productos: []
         };
@@ -147,10 +148,13 @@ export class HistorialVentasPage implements OnInit {
       agrupadas[v.venta_id].productos.push(v);
 
       agrupadas[v.venta_id].total += Number(v.total);
+      agrupadas[v.venta_id].costo += Number(v.costo);
     });
 
     this.ventas = Object.values(agrupadas);
     this.ventasFiltradas = this.ventas;
+
+    this.calcularKPIs();
   }
 
 filtrarVentas() {
@@ -172,6 +176,8 @@ filtrarVentas() {
 
     return factura || vendedor;
   });
+
+  this.calcularKPIs();
 }
 
   calcularKPIs() {

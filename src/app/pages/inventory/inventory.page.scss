@@ -253,6 +253,104 @@ ul {
   border-color: #4a6cf7;
 }
 
+/* ==========================================
+   🔍 COMBOBOX DE CATEGORÍA (modal producto)
+========================================== */
+.categoria-combo {
+  position: relative;
+}
+
+.combo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.combo-wrapper input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px 12px 10px 36px;
+  color: var(--text-main);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  outline: none;
+  transition: 0.2s;
+  box-sizing: border-box;
+}
+
+.combo-wrapper input:hover {
+  border: 1px solid #444;
+}
+
+.combo-wrapper input:focus {
+  border: 1px solid #4cafef;
+  box-shadow: 0 0 0 2px rgba(76, 175, 239, 0.2);
+}
+
+.combo-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 15px;
+  color: #9e9ea7;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.combo-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 50;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.combo-option {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.combo-option:hover {
+  background: #4a6cf7;
+  color: white;
+}
+
+.combo-clear {
+  color: #ef4444;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.combo-clear:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.combo-empty {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #9e9ea7;
+  text-align: center;
+}
+
+.combo-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.combo-dropdown::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
+}
+
 /* INPUT GROUP */
 .input-group {
   display: flex;

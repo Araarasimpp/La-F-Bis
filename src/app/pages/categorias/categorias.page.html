@@ -1,0 +1,77 @@
+<ion-content>
+
+  <div class="layout">
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <div class="topbar">
+        <ion-menu-button></ion-menu-button>
+      </div>
+
+      <div class="toolbar">
+        <!-- 🔍 BUSCADOR -->
+        <div class="group">
+          <ion-icon class="icon" name="search-outline"></ion-icon>
+          <input
+            class="filtrar"
+            type="text"
+            placeholder="Buscar categoría..."
+            [(ngModel)]="busqueda"
+            (input)="filtrar()"
+          />
+        </div>
+
+        <!-- ➕ BOTÓN -->
+        <button class="fab" (click)="abrirModal()">+</button>
+      </div>
+
+      <!-- 🗂️ GRID -->
+      <div class="grid">
+
+        <div class="card" *ngFor="let c of categoriasFiltradas">
+          <h3>{{ c.nombre | uppercase }}</h3>
+
+          <div class="actions">
+            <button (click)="abrirModal(c)">Editar</button>
+            <button class="danger" (click)="eliminar(c.id)">Eliminar</button>
+          </div>
+        </div>
+
+        <div class="empty" *ngIf="categoriasFiltradas.length === 0">
+          No se encontraron categorías
+        </div>
+
+      </div>
+
+      <!-- 🧾 MODAL -->
+      <div class="modal" *ngIf="showModal">
+
+        <div class="modal-content">
+
+          <h2>{{ editando ? 'Editar categoría' : 'Nueva categoría' }}</h2>
+
+          <div class="input-group">
+            <label>Nombre</label>
+            <input
+              [(ngModel)]="form.nombre"
+              placeholder="Ej: Frenos, Motor, Eléctrico..."
+              (keyup.enter)="guardarCategoria()"
+            />
+          </div>
+
+          <!-- BOTONES -->
+          <div class="modal-actions">
+            <button (click)="guardarCategoria()" [disabled]="guardando">Guardar</button>
+            <button (click)="cerrarModal()">Cancelar</button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>
