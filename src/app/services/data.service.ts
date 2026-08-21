@@ -362,17 +362,14 @@ export class DataService {
 
     if (fechaInicio && fechaFin) {
 
-      // 🧠 convertir a fecha LOCAL (Colombia)
+      // 🧠 Estos ya son instantes correctos en hora local (Colombia)
       const inicioLocal = new Date(fechaInicio + 'T00:00:00');
-      const finLocal = new Date(fechaFin + 'T23:59:59');
+      const finLocal = new Date(fechaFin + 'T23:59:59.999');
 
-      // 🔥 convertir a UTC (lo que usa Supabase)
-      const inicioUTC = new Date(inicioLocal.getTime() - inicioLocal.getTimezoneOffset() * 60000);
-      const finUTC = new Date(finLocal.getTime() - finLocal.getTimezoneOffset() * 60000);
-
+      // ✅ toISOString() ya hace la conversión a UTC correctamente, sin ayuda extra
       query = query
-        .gte('fecha', inicioUTC.toISOString())
-        .lte('fecha', finUTC.toISOString());
+        .gte('fecha', inicioLocal.toISOString())
+        .lte('fecha', finLocal.toISOString());
     }
 
     const { data, error } = await query.order('fecha', { ascending: true });

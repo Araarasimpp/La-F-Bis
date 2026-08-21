@@ -103,9 +103,9 @@ export class HistorialVentasPage implements OnInit {
     }
   }
 
- async cargarVentas() {
+  async cargarVentas() {
 
-    const { data, error } = await this.supabaseService.supabase
+    let query = this.supabaseService.supabase
       .from('ventas')
       .select(`
         *,
@@ -115,8 +115,20 @@ export class HistorialVentasPage implements OnInit {
         profiles (
           username
         )
-      `)
-      .order('fecha', { ascending: false });
+      `);
+
+    // 🔥 FILTRO POR FECHA (esto era lo que faltaba)
+    if (this.fechaInicio && this.fechaFin) {
+
+      const inicioLocal = new Date(this.fechaInicio + 'T00:00:00');
+      const finLocal = new Date(this.fechaFin + 'T23:59:59.999');
+
+      query = query
+        .gte('fecha', inicioLocal.toISOString())
+        .lte('fecha', finLocal.toISOString());
+    }
+
+    const { data, error } = await query.order('fecha', { ascending: false });
 
     if (error) {
       console.error(error);
@@ -157,42 +169,50 @@ export class HistorialVentasPage implements OnInit {
     this.calcularKPIs();
   }
 
-filtrarVentas() {
+  filtrarVentas() {
 
-  if (!this.busqueda) {
-    this.ventasFiltradas = this.ventas;
-    return;
+    if (!this.busqueda) {
+      this.ventasFiltradas = this.ventas;
+      return;
+    }
+
+    const texto = this.busqueda.toLowerCase();
+
+    this.ventasFiltradas = this.ventas.filter((v: any) => {
+
+      const factura =
+        v.venta_id?.toLowerCase().includes(texto);
+
+      const vendedor =
+        v.vendedor?.toLowerCase().includes(texto);
+
+      return factura || vendedor;
+    });
+
+    this.calcularKPIs();
   }
-
-  const texto = this.busqueda.toLowerCase();
-
-  this.ventasFiltradas = this.ventas.filter((v: any) => {
-
-    const factura =
-      v.venta_id?.toLowerCase().includes(texto);
-
-    const vendedor =
-      v.vendedor?.toLowerCase().includes(texto);
-
-    return factura || vendedor;
-  });
-
-  this.calcularKPIs();
-}
 
   calcularKPIs() {
 
-    this.totalVentas = this.ventasFiltradas.reduce(
-      (a: number, b: any) =>
-        a + Number(b.total),
-      0
+    this.totalVentas = Math.round(
+      this.ventasFiltradas.reduce(
+        (a: number, b: any) => a + Number(b.total),
+        0
+      )
     );
 
-    this.totalGanancia = this.ventasFiltradas.reduce(
-      (a: number, b: any) =>
-        a + (Number(b.total) - Number(b.costo)),
-      0
+    this.totalGanancia = Math.round(
+      this.ventasFiltradas.reduce(
+        (a: number, b: any) => a + (Number(b.total) - Number(b.costo)),
+        0
+      )
     );
+  }
+
+  limpiarFechas() {
+    this.fechaInicio = '';
+    this.fechaFin = '';
+    this.cargarVentas();
   }
 
   async eliminarVenta(venta: any) {

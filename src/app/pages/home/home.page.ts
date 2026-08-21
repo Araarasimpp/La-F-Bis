@@ -141,8 +141,8 @@ export class HomePage implements OnInit, AfterViewInit {
   calcularComparacion() {
     if (!this.fechaInicio || !this.fechaFin) return;
 
-    const inicio = new Date(this.fechaInicio);
-    const fin = new Date(this.fechaFin);
+    const inicio = this.parseFechaLocal(this.fechaInicio);
+    const fin = this.parseFechaLocal(this.fechaFin, true);
 
     const diff = fin.getTime() - inicio.getTime();
 
@@ -154,14 +154,15 @@ export class HomePage implements OnInit, AfterViewInit {
       this.formatoFecha(finAnterior)
     ).then((ventasAnt: any[]) => {
 
-      this.totalVentasAnterior = ventasAnt.reduce(
-        (a, b) => a + Number(b.total), 0
+      this.totalVentasAnterior = Math.round(
+        ventasAnt.reduce((a, b) => a + Number(b.total), 0)
       );
 
       if (this.totalVentasAnterior > 0) {
-        this.crecimientoVentas =
+        this.crecimientoVentas = Math.round(
           ((this.totalVentas - this.totalVentasAnterior) /
-          this.totalVentasAnterior) * 100;
+          this.totalVentasAnterior) * 100
+        );
       }
     });
   }
@@ -261,14 +262,21 @@ export class HomePage implements OnInit, AfterViewInit {
     this.cargarDatos();
   }
 
+  // 🔥 helper: parsea "YYYY-MM-DD" como medianoche LOCAL, no UTC
+  private parseFechaLocal(fechaStr: string, finDelDia = false): Date {
+    return new Date(fechaStr + (finDelDia ? 'T23:59:59.999' : 'T00:00:00'));
+  }
+
   // 👉 mostrar bonito
   actualizarTextoFecha() {
     if (!this.fechaInicio || !this.fechaFin) return;
 
     const opciones: any = { day: '2-digit', month: 'short' };
 
-    const inicio = new Date(this.fechaInicio).toLocaleDateString('es-ES', opciones);
-    const fin = new Date(this.fechaFin).toLocaleDateString('es-ES', opciones);
+    const inicio = this.parseFechaLocal(this.fechaInicio)
+      .toLocaleDateString('es-ES', opciones);
+    const fin = this.parseFechaLocal(this.fechaFin)
+      .toLocaleDateString('es-ES', opciones);
 
     this.fechaTexto = `${inicio} - ${fin}`;
   }
@@ -321,9 +329,8 @@ export class HomePage implements OnInit, AfterViewInit {
 
     // 1. validar si entra en el rango actual
     const fechaVenta = new Date(nuevaVenta.fecha);
-    const inicio = new Date(this.fechaInicio);
-    const fin = new Date(this.fechaFin);
-    fin.setHours(23,59,59,999);
+    const inicio = this.parseFechaLocal(this.fechaInicio);
+    const fin = this.parseFechaLocal(this.fechaFin, true);
 
     if (fechaVenta < inicio || fechaVenta > fin) return;
 
@@ -331,8 +338,10 @@ export class HomePage implements OnInit, AfterViewInit {
     this.ventas.push(nuevaVenta);
 
     // 3. actualizar KPIs (sin recalcular todo)
-    this.totalVentas += Number(nuevaVenta.total);
-    this.totalGanancia += Number(nuevaVenta.total) - Number(nuevaVenta.costo);
+    this.totalVentas = Math.round(this.totalVentas + Number(nuevaVenta.total));
+    this.totalGanancia = Math.round(
+      this.totalGanancia + Number(nuevaVenta.total) - Number(nuevaVenta.costo)
+    );
 
     // 4. actualizar gráficas incremental
     this.updateChartsIncremental(nuevaVenta);
@@ -417,12 +426,16 @@ export class HomePage implements OnInit, AfterViewInit {
 
     this.ventas = ventas;
 
-    // KPIs
-    this.totalVentas = ventas.reduce((a: number, b: any) => a + Number(b.total), 0);
+     // KPIs
+    this.totalVentas = Math.round(
+      ventas.reduce((a: number, b: any) => a + Number(b.total), 0)
+    );
 
-    this.totalGanancia = ventas.reduce(
-      (a: number, b: any) => a + (Number(b.total) - Number(b.costo)),
-      0
+    this.totalGanancia = Math.round(
+      ventas.reduce(
+        (a: number, b: any) => a + (Number(b.total) - Number(b.costo)),
+        0
+      )
     );
 
     // 👇 AGRUPAR DATOS PARA GRÁFICAS

@@ -15,12 +15,12 @@
       <div class="kpis">
         <div class="kpi">
           <span>Total Ventas</span>
-          <h2>{{ totalVentas | currency:'' }}</h2>
+          <h2>{{ totalVentas | currency:'':'symbol':'1.0-0' }}</h2>
         </div>
 
         <div class="kpi">
           <span>Ganancia</span>
-          <h2>{{ totalGanancia | currency:'' }}</h2>
+          <h2>{{ totalGanancia | currency:'':'symbol':'1.0-0' }}</h2>
         </div>
       </div>
 
@@ -50,6 +50,13 @@
               [(ngModel)]="fechaFin"
               (change)="cargarVentas()">
           </div>
+
+          <button
+            class="clear-btn"
+            *ngIf="fechaInicio || fechaFin"
+            (click)="limpiarFechas()">
+            ✕ Limpiar
+          </button>
         </div>
       </div>
 
@@ -67,7 +74,7 @@
               <span class="metodo" [class.efectivo]="venta.metodo_pago === 'efectivo'">
                 {{ venta.metodo_pago | uppercase }}
               </span>
-              <h2 class="monto-total">{{ venta.total | currency:'' }}</h2>
+              <h2 class="monto-total">{{ venta.total | currency:'':'symbol':'1.0-0' }}</h2>
             </div>
           </div>
 
@@ -82,14 +89,14 @@
                 <strong>{{ item.productos?.elemento | uppercase }}</strong>
                 <small>x{{ item.cantidad }}</small>
               </div>
-              <strong class="producto-total">{{ item.total | currency:'' }}</strong>
+              <strong class="producto-total">{{ item.total | currency:'':'symbol':'1.0-0' }}</strong>
             </div>
           </div>
 
           <div class="extra-info" *ngIf="venta.metodo_pago === 'efectivo'">
             <div class="efectivo-row">
-              <span>Recibido: <strong>{{ venta.pago_recibido | currency:'' }}</strong></span>
-              <span>Cambio: <strong class="cambio-txt">{{ venta.cambio | currency:'' }}</strong></span>
+              <span>Recibido: <strong>{{ venta.pago_recibido | currency:'':'symbol':'1.0-0' }}</strong></span>
+              <span>Cambio: <strong class="cambio-txt">{{ venta.cambio | currency:'':'symbol':'1.0-0' }}</strong></span>
             </div>
           </div>
 
@@ -103,6 +110,10 @@
             </button>
           </div>
 
+        </div>
+
+        <div class="empty" *ngIf="ventasFiltradas.length === 0">
+          No hay ventas en este rango de fechas
         </div>
 
       </div>
