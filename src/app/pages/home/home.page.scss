@@ -1,6 +1,5 @@
 .fecha-hoy {
   margin: 0 0 4px;
-  text-transform: capitalize;
 }
 
 .periodo {
@@ -136,19 +135,33 @@
   height: 200px;
 }
 
+.chart-box.vacio canvas {
+  visibility: hidden;
+}
+
 .sin-datos {
   position: absolute;
   inset: 0;
   margin: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  border-radius: 12px;
+  background: var(--fb-surface-2);
   color: var(--fb-muted);
   font-size: 14px;
+
+  ion-icon {
+    font-size: 28px;
+    color: var(--fb-faint);
+  }
 
   &.static {
     position: static;
     padding: 24px 0;
+    background: transparent;
   }
 }
 

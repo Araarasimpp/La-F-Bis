@@ -300,7 +300,7 @@ body.fb-has-tabbar ion-content {
 
   &.danger {
     background: transparent;
-    border-color: var(--fb-warn-bg);
+    border-color: color-mix(in srgb, var(--fb-warn) 35%, transparent);
     color: var(--fb-warn);
   }
 
@@ -366,8 +366,10 @@ body.fb-has-tabbar ion-content {
    ========================================================= */
 
 .fb-search {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  min-height: 48px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -683,7 +685,10 @@ input.fb-plate {
   font-size: 30px;
 
   &::placeholder {
-    color: rgba(17, 18, 20, 0.45);
+    color: rgba(17, 18, 20, 0.3);
+    font-size: 0.6em;
+    letter-spacing: 0.04em;
+    text-transform: none;
   }
 
   &:focus {
@@ -923,8 +928,17 @@ input.fb-plate {
 
 .flatpickr-months {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
+  padding-right: 44px;
+
+  .flatpickr-month {
+    flex: 1;
+    height: auto;
+    overflow: visible;
+    color: var(--fb-text);
+    fill: var(--fb-text);
+  }
 }
 
 .flatpickr-prev-month,
@@ -933,28 +947,74 @@ input.fb-plate {
 }
 
 .flatpickr-current-month {
-  display: flex;
-  gap: 10px;
-  width: 80%;
+  position: static !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  width: 100% !important;
+  height: auto !important;
+  padding: 0 !important;
+  left: auto !important;
   color: var(--fb-text);
+  font-size: 15px !important;
 
   .flatpickr-monthDropdown-months,
-  input.cur-year {
-    padding: 6px 10px;
-    border: 0;
+  .numInputWrapper {
+    height: 40px;
+    margin: 0 !important;
     border-radius: 10px;
     background: var(--fb-surface-2);
+  }
+
+  .flatpickr-monthDropdown-months {
+    flex: 1;
+    padding: 0 10px !important;
+    border: 0;
     color: var(--fb-text);
     font-weight: 600;
+    text-transform: capitalize;
+  }
+
+  .numInputWrapper {
+    width: 84px !important;
+    flex-shrink: 0;
+
+    input.cur-year {
+      height: 40px;
+      padding: 0 10px !important;
+      border: 0;
+      background: transparent;
+      color: var(--fb-text);
+      font-weight: 600;
+    }
+
+    span.arrowUp,
+    span.arrowDown {
+      display: none;
+    }
   }
 }
 
 .flatpickr-weekdays {
   display: flex;
+  width: 100%;
+  height: 32px;
+  background: transparent;
+}
+
+.flatpickr-weekdaycontainer {
+  display: flex;
+  width: 100%;
 }
 
 .flatpickr-weekday {
+  flex: 1;
+  margin: 0;
+  background: transparent !important;
   font-size: 12px;
+  font-weight: 600;
+  line-height: 32px;
+  text-transform: capitalize;
   color: var(--fb-muted) !important;
   text-align: center;
 }
@@ -1023,4 +1083,20 @@ input.fb-plate {
   background: var(--fb-surface-2);
   color: var(--fb-text);
   font-size: 14px;
+}
+
+/* Barras de desplazamiento discretas en paneles internos */
+.fb-thin-scroll,
+.fb-sheet-body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--fb-surface-3) transparent;
+}
+
+/* Avisos breves (toast) con el estilo de la app */
+ion-toast.fb-toast {
+  --background: var(--fb-text);
+  --color: var(--fb-bg);
+  --border-radius: 14px;
+  --max-width: 420px;
+  font-weight: 600;
 }

@@ -4,9 +4,20 @@
     <header class="fb-header">
       <div>
         <h1 class="fb-title">Ventas</h1>
-        <span class="fb-sub">{{ ventasFiltradas.length }} facturas{{ fechaInicio && fechaFin ? ' en el rango elegido' : '' }}</span>
+        <span class="fb-sub">{{ ventasFiltradas.length }} {{ ventasFiltradas.length === 1 ? 'factura' : 'facturas' }}</span>
       </div>
+      <button type="button" class="fb-btn ghost" (click)="exportarCSV()" [disabled]="!ventasFiltradas.length">
+        <ion-icon name="cloud-upload-outline" aria-hidden="true"></ion-icon>
+        Exportar
+      </button>
     </header>
+
+    <div class="fb-seg periodos" role="group" aria-label="Periodo">
+      <button type="button" [class.on]="periodo === 'hoy'" (click)="setPeriodo('hoy')">Hoy</button>
+      <button type="button" [class.on]="periodo === 'semana'" (click)="setPeriodo('semana')">7 días</button>
+      <button type="button" [class.on]="periodo === 'mes'" (click)="setPeriodo('mes')">Mes</button>
+      <button type="button" [class.on]="periodo === 'todo'" (click)="setPeriodo('todo')">Todo</button>
+    </div>
 
     <div class="kpis">
       <div class="fb-card kpi">
@@ -19,12 +30,27 @@
       </div>
     </div>
 
+    <!-- Cuadre de caja -->
+    <section class="fb-card cuadre" *ngIf="ventasFiltradas.length">
+      <h2 class="fb-eyebrow">Cuadre de caja</h2>
+      <div class="cuadre-row">
+        <ion-icon name="cash-outline" aria-hidden="true"></ion-icon>
+        <span>Efectivo <small>{{ facturasEfectivo }} fact.</small></span>
+        <strong class="fb-money">$ {{ totalEfectivo | number:'1.0-0' }}</strong>
+      </div>
+      <div class="cuadre-row">
+        <ion-icon name="swap-horizontal-outline" aria-hidden="true"></ion-icon>
+        <span>Transferencia <small>{{ facturasTransferencia }} fact.</small></span>
+        <strong class="fb-money">$ {{ totalTransferencia | number:'1.0-0' }}</strong>
+      </div>
+    </section>
+
     <label class="fb-search">
       <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
-      <span class="fb-sr">Buscar factura o vendedor</span>
+      <span class="fb-sr">Buscar factura, vendedor o producto</span>
       <input
         type="search"
-        placeholder="N.º de factura o vendedor"
+        placeholder="Factura, vendedor o producto"
         [(ngModel)]="busqueda"
         (input)="filtrarVentas()">
     </label>
@@ -32,11 +58,11 @@
     <div class="rango">
       <label class="fb-field">
         <span>Desde</span>
-        <input type="date" [(ngModel)]="fechaInicio" (change)="cargarVentas()">
+        <input type="date" [(ngModel)]="fechaInicio" (change)="cambioFechas()">
       </label>
       <label class="fb-field">
         <span>Hasta</span>
-        <input type="date" [(ngModel)]="fechaFin" (change)="cargarVentas()">
+        <input type="date" [(ngModel)]="fechaFin" (change)="cambioFechas()">
       </label>
       <button
         type="button"
@@ -48,7 +74,11 @@
       </button>
     </div>
 
-    <div class="list">
+    <div class="fb-loading" *ngIf="cargando">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <div class="list" *ngIf="!cargando">
       <details class="venta" *ngFor="let venta of ventasFiltradas; let i = index" [open]="i === 0">
         <summary>
           <div class="sum-main">
@@ -96,7 +126,8 @@
       <div class="fb-empty" *ngIf="!ventasFiltradas.length">
         <ion-icon name="receipt-outline"></ion-icon>
         <strong>No hay ventas para mostrar</strong>
-        <span>Cambia el rango de fechas o la búsqueda.</span>
+        <span>Cambia el periodo o la búsqueda.</span>
+        <button type="button" class="fb-link" *ngIf="periodo !== 'todo'" (click)="setPeriodo('todo')">Ver todas las ventas</button>
       </div>
     </div>
   </div>

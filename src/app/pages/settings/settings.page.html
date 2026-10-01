@@ -47,6 +47,26 @@
       </label>
     </section>
 
+    <section class="fb-card block">
+      <h2 class="fb-eyebrow">Inventario</h2>
+
+      <div class="switch-row">
+        <span class="switch-text">
+          <strong>Avisar cuando queden</strong>
+          <span>Los productos con esta cantidad o menos se marcan "por reponer" en Inventario y en Vender.</span>
+        </span>
+        <div class="fb-stepper">
+          <button type="button" (click)="cambiarStockMinimo(-1)" aria-label="Avisar con una unidad menos">
+            <ion-icon name="remove-outline"></ion-icon>
+          </button>
+          <span class="qty" aria-live="polite">{{ settings.stock_minimo }}</span>
+          <button type="button" class="plus" (click)="cambiarStockMinimo(1)" aria-label="Avisar con una unidad más">
+            <ion-icon name="add-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+
     <button type="button" class="fb-btn primary big block" (click)="guardar()" [disabled]="loading">
       <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
       <ion-icon *ngIf="guardado && !loading" name="checkmark-outline" aria-hidden="true"></ion-icon>

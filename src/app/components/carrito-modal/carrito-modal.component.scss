@@ -4,6 +4,11 @@
 }
 
 .cart {
+  scrollbar-width: thin;
+  scrollbar-color: var(--fb-surface-3) transparent;
+}
+
+.cart {
   height: 100%;
   overflow-y: auto;
   box-sizing: border-box;
@@ -132,6 +137,11 @@
   &.falta {
     background: var(--fb-warn-bg);
     color: var(--fb-warn);
+  }
+
+  &.pendiente {
+    background: var(--fb-surface-2);
+    color: var(--fb-faint);
   }
 }
 

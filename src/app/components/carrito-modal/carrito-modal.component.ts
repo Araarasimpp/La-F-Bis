@@ -27,6 +27,12 @@ export class CarritoModalComponent {
     return this.ventas?.unidades || 0;
   }
 
+  /** Aún no se ha escrito cuánto pagó el cliente */
+  get sinPago(): boolean {
+    const v = this.ventas?.pagoRecibido;
+    return v === '' || v === null || v === undefined;
+  }
+
   cerrar() {
     this.modalCtrl.dismiss();
   }

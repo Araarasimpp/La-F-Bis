@@ -9,8 +9,7 @@ import { IONIC_IMPORTS } from 'src/app/shared/ionic-imports';
 import { DataService } from '../../services/data.service';
 import { SupabaseService } from '../../services/supabase.service';
 import { AuthService } from 'src/app/services/auth.service';
-
-const STOCK_BAJO = 5;
+import { umbralStock } from 'src/app/services/stock';
 
 @Component({
   selector: 'app-inventory',
@@ -21,7 +20,13 @@ const STOCK_BAJO = 5;
 })
 export class InventoryPage implements OnInit, OnDestroy {
 
-  readonly stockBajoLimite = STOCK_BAJO;
+  /** Desde cuántas unidades se avisa (Configuración → Inventario) */
+  umbral = umbralStock();
+
+  // Resumen calculado al cargar (no en cada ciclo de pantalla)
+  agotados = 0;
+  porAgotarse = 0;
+  valorInventario = 0;
 
   // Lector de código de barras por teclado
   barcodeBuffer = '';
@@ -72,8 +77,22 @@ export class InventoryPage implements OnInit, OnDestroy {
     return !!this.form?.id;
   }
 
-  get totalStockBajo(): number {
-    return this.productos.filter(p => p.stock < STOCK_BAJO).length;
+  /** Al volver a la pantalla (por ejemplo desde Configuración) */
+  ionViewWillEnter() {
+    const nuevo = umbralStock();
+    if (nuevo !== this.umbral) {
+      this.umbral = nuevo;
+      this.calcularResumen();
+      this.filtrar();
+    }
+  }
+
+  private calcularResumen() {
+    this.agotados = this.productos.filter(p => p.stock <= 0).length;
+    this.porAgotarse = this.productos.filter(p => p.stock > 0 && p.stock <= this.umbral).length;
+    this.valorInventario = Math.round(
+      this.productos.reduce((s, p) => s + (p.stock > 0 ? Number(p.costo || 0) * p.stock : 0), 0)
+    );
   }
 
   trackId(_: number, p: any) {
@@ -303,6 +322,7 @@ export class InventoryPage implements OnInit, OnDestroy {
     this.cargando = true;
     this.productos = await this.dataService.getProductos();
     this.cargando = false;
+    this.calcularResumen();
     this.filtrar();
   }
 
@@ -317,7 +337,12 @@ export class InventoryPage implements OnInit, OnDestroy {
     this.mostrarDropdownCategorias = false;
 
     if (producto?.id) {
-      this.form = { ...producto, categoria_id: producto.categoria_id || null };
+      this.form = {
+        ...producto,
+        categoria_id: producto.categoria_id || null,
+        // Se guardaba con muchos decimales (73,4441273…); se muestra con uno
+        porcentaje_ganancia: Math.round((Number(producto.porcentaje_ganancia) || 0) * 10) / 10
+      };
       this.previewImage = producto.imagen_url || null;
       this.categoriaBusqueda = producto.categorias_repuestos?.nombre || '';
     } else {
@@ -399,6 +424,7 @@ export class InventoryPage implements OnInit, OnDestroy {
     }
 
     this.productos = this.productos.filter(p => p.id !== id);
+    this.calcularResumen();
     this.filtrar();
     this.cerrarModal();
   }
@@ -431,7 +457,7 @@ export class InventoryPage implements OnInit, OnDestroy {
 
       const matchBusqueda = palabras.every(w => texto.includes(w));
       const matchCategoria = !this.categoriaFiltro || p.categorias_repuestos?.nombre === this.categoriaFiltro;
-      const matchStock = !this.soloStockBajo || p.stock < STOCK_BAJO;
+      const matchStock = !this.soloStockBajo || p.stock <= this.umbral;
 
       return matchBusqueda && matchCategoria && matchStock;
     });

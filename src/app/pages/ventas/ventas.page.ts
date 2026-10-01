@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular/standalone';
+import { ModalController, ToastController } from '@ionic/angular/standalone';
 import { AlertController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import html2canvas from 'html2canvas';
@@ -17,6 +17,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { CarritoStateService } from 'src/app/services/carrito-state.service';
 import { CarritoModalComponent } from 'src/app/components/carrito-modal/carrito-modal.component';
+import { umbralStock } from 'src/app/services/stock';
 
 @Component({
   selector: 'app-ventas',
@@ -31,8 +32,13 @@ export class VentasPage implements OnInit, OnDestroy {
   barcodeBuffer = '';
   lastKeyTime = 0;
 
+  @ViewChild('buscador') buscador?: ElementRef<HTMLInputElement>;
+
   categoriaFiltro = '';
   busqueda = '';
+  mostrarAgotados = false;
+  umbral = umbralStock();
+  totalAgotados = 0;
   productos: any[] = [];
   cargando = true;
 
@@ -60,8 +66,13 @@ export class VentasPage implements OnInit, OnDestroy {
     private modalController: ModalController,
     private alertController: AlertController,
     private notiService: NotificationService,
-    private carritoState: CarritoStateService
+    private carritoState: CarritoStateService,
+    private toastCtrl: ToastController
   ) {}
+
+  ionViewWillEnter() {
+    this.umbral = umbralStock();
+  }
 
   async ngOnInit() {
     window.addEventListener('keydown', this.handleScanner);
@@ -93,19 +104,34 @@ export class VentasPage implements OnInit, OnDestroy {
   async cargarProductos() {
     this.cargando = true;
     this.productos = await this.dataService.getProductos();
+    this.totalAgotados = this.productos.filter(p => p.stock <= 0).length;
     this.cargando = false;
   }
 
+  // Se recalcula solo cuando cambian los datos o la búsqueda (no en cada ciclo)
+  private cacheClave = '';
+  private cacheLista: any[] = [];
+
   get productosFiltrados() {
+    const clave = `${this.busqueda}|${this.categoriaFiltro}|${this.mostrarAgotados}|${this.productos.length}|${this.cargando}`;
+    if (clave !== this.cacheClave) {
+      this.cacheClave = clave;
+      this.cacheLista = this.filtrarProductos();
+    }
+    return this.cacheLista;
+  }
+
+  private filtrarProductos() {
     const palabras = this.busqueda.toLowerCase().trim().split(' ').filter(p => p);
+    const base = this.mostrarAgotados ? this.productos : this.productos.filter(p => p.stock > 0);
 
     if (palabras.length === 0) {
       return this.categoriaFiltro
-        ? this.productos.filter(p => p.categorias_repuestos?.nombre === this.categoriaFiltro)
-        : this.productos;
+        ? base.filter(p => p.categorias_repuestos?.nombre === this.categoriaFiltro)
+        : base;
     }
 
-    return this.productos.filter(p => {
+    return base.filter(p => {
       const texto = `
         ${p.elemento} ${p.marca} ${p.codigo} ${p.codigo_barras}
         ${p.numero_inventario} ${p.proveedor} ${p.moto} ${p.precio}
@@ -132,6 +158,18 @@ export class VentasPage implements OnInit, OnDestroy {
   // =========================
 
   handleScanner = (event: KeyboardEvent) => {
+    // F2 enfoca el buscador; Esc lo limpia (útil en el computador de la caja)
+    if (event.key === 'F2') {
+      event.preventDefault();
+      this.buscador?.nativeElement.focus();
+      this.buscador?.nativeElement.select();
+      return;
+    }
+    if (event.key === 'Escape' && document.activeElement === this.buscador?.nativeElement) {
+      this.busqueda = '';
+      return;
+    }
+
     const ahora = Date.now();
     const diff = ahora - this.lastKeyTime;
     this.lastKeyTime = ahora;
@@ -157,7 +195,7 @@ export class VentasPage implements OnInit, OnDestroy {
     const producto = this.productos.find(p => p.codigo_barras === codigo);
 
     if (!producto) {
-      alert('Producto no encontrado');
+      this.avisar(`No hay ningún producto con el código ${codigo}`);
       return;
     }
 
@@ -174,21 +212,40 @@ export class VentasPage implements OnInit, OnDestroy {
 
   agregarAlCarrito(producto: any) {
     if (producto.stock <= 0) {
-      alert('Sin stock');
+      this.avisar(`${producto.elemento} está agotado`);
       return;
     }
 
     const existe = this.carrito.find(p => p.id === producto.id);
 
     if (existe) {
-      if (existe.cantidad < producto.stock) {
-        existe.cantidad++;
+      if (existe.cantidad >= producto.stock) {
+        this.avisar(`Solo hay ${producto.stock} en stock de ${producto.elemento}`);
+        return;
       }
+      existe.cantidad++;
     } else {
       this.carrito.push({ ...producto, cantidad: 1 });
     }
 
     this.calcularTotal();
+    navigator.vibrate?.(15);
+    this.avisar(`Agregado: ${producto.elemento}`, 'add-outline');
+  }
+
+  private toastActual?: HTMLIonToastElement;
+
+  /** Aviso breve abajo de la pantalla; reemplaza al anterior para no apilar */
+  private async avisar(mensaje: string, icono = 'alert-circle-outline') {
+    await this.toastActual?.dismiss().catch(() => undefined);
+    this.toastActual = await this.toastCtrl.create({
+      message: mensaje,
+      icon: icono,
+      duration: 1400,
+      position: 'top',
+      cssClass: 'fb-toast'
+    });
+    await this.toastActual.present();
   }
 
   disminuir(item: any) {
@@ -237,7 +294,7 @@ export class VentasPage implements OnInit, OnDestroy {
       component: CarritoModalComponent,
       componentProps: { ventas: this },
       breakpoints: [0, 0.5, 0.92],
-      initialBreakpoint: 0.92,
+      initialBreakpoint: this.carrito.length ? 0.92 : 0.5,
       handle: true
     });
 

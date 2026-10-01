@@ -5,6 +5,7 @@ import { IONIC_IMPORTS } from 'src/app/shared/ionic-imports';
 
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { CLAVE_STOCK_MINIMO, umbralStock } from 'src/app/services/stock';
 
 @Component({
   selector: 'app-settings',
@@ -27,8 +28,14 @@ export class SettingsPage implements OnInit {
 
   settings = {
     // Antes siempre mostraba "activado"; ahora lee lo que se guardó
-    ticket_auto: localStorage.getItem('ticket_auto') !== 'false'
+    ticket_auto: localStorage.getItem('ticket_auto') !== 'false',
+    stock_minimo: umbralStock()
   };
+
+  cambiarStockMinimo(delta: number) {
+    this.settings.stock_minimo = Math.max(0, Math.min(50, this.settings.stock_minimo + delta));
+    this.guardado = false;
+  }
 
   userId = '';
 
@@ -108,6 +115,7 @@ export class SettingsPage implements OnInit {
     }
 
     localStorage.setItem('ticket_auto', this.settings.ticket_auto ? 'true' : 'false');
+    localStorage.setItem(CLAVE_STOCK_MINIMO, String(this.settings.stock_minimo));
 
     // Refresca nombre y foto en el resto de la app
     await this.auth.loadUser();

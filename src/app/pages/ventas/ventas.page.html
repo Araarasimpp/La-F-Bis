@@ -6,7 +6,7 @@
       <header class="fb-header">
         <div>
           <h1 class="fb-title">Vender</h1>
-          <span class="fb-sub">Toca un producto para agregarlo o usa el lector de códigos</span>
+          <span class="fb-sub">Toca un producto o usa el lector de códigos<span class="atajo"> · <kbd>F2</kbd> para buscar</span></span>
         </div>
       </header>
 
@@ -14,6 +14,7 @@
         <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
         <span class="fb-sr">Buscar producto</span>
         <input
+          #buscador
           type="search"
           placeholder="Nombre, código, marca o moto"
           [(ngModel)]="busqueda">
@@ -27,7 +28,13 @@
         </button>
       </label>
 
-      <span class="count">{{ productosFiltrados.length }} productos</span>
+      <div class="count-row">
+        <span class="count">{{ productosFiltrados.length }} productos</span>
+        <label class="toggle" *ngIf="totalAgotados">
+          <input type="checkbox" class="fb-switch sm" [(ngModel)]="mostrarAgotados">
+          Mostrar agotados ({{ totalAgotados }})
+        </label>
+      </div>
 
       <div class="fb-loading" *ngIf="cargando">
         <ion-spinner name="crescent"></ion-spinner>
@@ -52,7 +59,9 @@
           <span class="info">
             <span class="name">{{ p.elemento }}</span>
             <span class="meta fb-mono">
-              {{ p.numero_inventario || p.codigo }}<ng-container *ngIf="p.ubicacion"> · {{ p.ubicacion }}</ng-container>
+              <ng-container *ngIf="p.numero_inventario; else codInterno">N.º {{ p.numero_inventario }}</ng-container>
+              <ng-template #codInterno>{{ p.codigo }}</ng-template>
+              <ng-container *ngIf="p.ubicacion"> · {{ p.ubicacion }}</ng-container>
             </span>
             <span class="meta" *ngIf="p.marca || p.moto">
               {{ p.marca }}<ng-container *ngIf="p.marca && p.moto"> · </ng-container>{{ p.moto }}
@@ -60,8 +69,8 @@
             <span class="bottom">
               <span class="price fb-money">$ {{ p.precio | number:'1.0-0' }}</span>
               <span class="fb-pill warn" *ngIf="p.stock <= 0">Agotado</span>
-              <span class="fb-pill warn" *ngIf="p.stock > 0 && p.stock < 5">Quedan {{ p.stock }}</span>
-              <span class="fb-pill" *ngIf="p.stock >= 5">Stock {{ p.stock }}</span>
+              <span class="fb-pill accent" *ngIf="p.stock > 0 && p.stock <= umbral">{{ p.stock === 1 ? 'Última unidad' : 'Quedan ' + p.stock }}</span>
+              <span class="fb-pill" *ngIf="p.stock > umbral">Stock {{ p.stock }}</span>
             </span>
           </span>
 
@@ -75,6 +84,7 @@
           <ion-icon name="search-outline"></ion-icon>
           <strong>Sin resultados</strong>
           <span>Prueba con otra palabra o con el código del producto.</span>
+          <button type="button" class="fb-link" *ngIf="!mostrarAgotados && totalAgotados" (click)="mostrarAgotados = true">Buscar también en agotados</button>
         </div>
       </div>
     </div>

@@ -78,9 +78,10 @@
         </label>
 
         <div class="fb-field">
-          <span>{{ ventas.cambio < 0 ? 'Falta' : 'Cambio' }}</span>
-          <output class="cambio fb-money" [class.falta]="ventas.cambio < 0" aria-live="polite">
-            $ {{ (ventas.cambio < 0 ? -ventas.cambio : ventas.cambio) | number:'1.0-0' }}
+          <span>{{ sinPago ? 'Cambio' : ventas.cambio < 0 ? 'Falta' : 'Cambio' }}</span>
+          <output class="cambio fb-money" [class.falta]="!sinPago && ventas.cambio < 0" [class.pendiente]="sinPago" aria-live="polite">
+            <ng-container *ngIf="sinPago">—</ng-container>
+            <ng-container *ngIf="!sinPago">$ {{ (ventas.cambio < 0 ? -ventas.cambio : ventas.cambio) | number:'1.0-0' }}</ng-container>
           </output>
         </div>
       </div>

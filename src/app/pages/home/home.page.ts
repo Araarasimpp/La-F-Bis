@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Chart } from 'chart.js/auto';
 import flatpickr from 'flatpickr';
+import { Spanish } from 'flatpickr/dist/l10n/es';
 import { Subscription } from 'rxjs';
 
 import { IONIC_IMPORTS } from 'src/app/shared/ionic-imports';
@@ -98,11 +99,13 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   // =========================
 
   ngOnInit() {
-    this.hoyTexto = new Date().toLocaleDateString('es-CO', {
+    // "jueves, 1 de octubre" → "Jueves, 1 de octubre" (solo la primera letra)
+    const hoy = new Date().toLocaleDateString('es-CO', {
       weekday: 'long',
       day: 'numeric',
       month: 'long'
     });
+    this.hoyTexto = hoy.charAt(0).toUpperCase() + hoy.slice(1);
 
     this.setMes(false);
 
@@ -202,7 +205,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       dateFormat: 'Y-m-d',
       showMonths: 1,
       maxDate: new Date(),
-      locale: { firstDayOfWeek: 1 },
+      locale: { ...Spanish, firstDayOfWeek: 1 },
 
       onReady: (_d, _s, instance) => {
         const calendar = instance.calendarContainer;

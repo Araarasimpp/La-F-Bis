@@ -161,3 +161,46 @@ summary {
     min-height: 44px;
   }
 }
+
+.periodos {
+  max-width: 480px;
+}
+
+.cuadre {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.cuadre-row {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--fb-accent-text);
+  }
+
+  small {
+    margin-left: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--fb-muted);
+  }
+
+  strong {
+    font-size: 22px;
+  }
+}
+
+.fb-header .fb-btn {
+  min-height: 44px;
+}

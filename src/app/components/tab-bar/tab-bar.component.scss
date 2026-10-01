@@ -108,7 +108,12 @@
 
   .sell {
     align-self: center;
+    width: 68px;
+    height: auto;
     margin: 8px 0;
+    padding: 12px 0 10px;
+    flex-direction: column;
+    gap: 4px;
     box-shadow: none;
   }
 
@@ -116,7 +121,14 @@
     position: static;
     width: auto;
     height: auto;
+    overflow: visible;
     clip: auto;
-    display: none;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge {
+    top: -8px;
+    right: -8px;
   }
 }

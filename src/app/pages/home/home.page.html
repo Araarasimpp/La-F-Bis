@@ -71,9 +71,13 @@
           <h2>Ventas por día</h2>
           <span>{{ fechaTexto }}</span>
         </div>
-        <div class="chart-box">
+        <div class="chart-box" [class.vacio]="!cargando && !ventas.length">
           <canvas #ventasChart aria-label="Gráfica de ventas por día" role="img"></canvas>
-          <p class="sin-datos" *ngIf="!cargando && !ventas.length">Sin ventas en este periodo</p>
+          <div class="sin-datos" *ngIf="!cargando && !ventas.length">
+            <ion-icon name="receipt-outline" aria-hidden="true"></ion-icon>
+            <span>Sin ventas en este periodo</span>
+            <button type="button" class="fb-link" *ngIf="preset !== 'mes'" (click)="setMes()">Ver el mes completo</button>
+          </div>
         </div>
       </section>
 
@@ -82,9 +86,13 @@
           <h2>Ganancia por día</h2>
           <span>Margen {{ margen }} %</span>
         </div>
-        <div class="chart-box">
+        <div class="chart-box" [class.vacio]="!cargando && !ventas.length">
           <canvas #gananciaChart aria-label="Gráfica de ganancia por día" role="img"></canvas>
-          <p class="sin-datos" *ngIf="!cargando && !ventas.length">Sin ventas en este periodo</p>
+          <div class="sin-datos" *ngIf="!cargando && !ventas.length">
+            <ion-icon name="receipt-outline" aria-hidden="true"></ion-icon>
+            <span>Sin ventas en este periodo</span>
+            <button type="button" class="fb-link" *ngIf="preset !== 'mes'" (click)="setMes()">Ver el mes completo</button>
+          </div>
         </div>
       </section>
 

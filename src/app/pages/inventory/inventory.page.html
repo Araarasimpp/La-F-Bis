@@ -6,7 +6,8 @@
         <h1 class="fb-title">Inventario</h1>
         <span class="fb-sub">
           {{ productos.length }} referencias
-          <ng-container *ngIf="totalStockBajo"> · <span class="warn-text">{{ totalStockBajo }} con stock bajo</span></ng-container>
+          <ng-container *ngIf="agotados"> · <span class="warn-text">{{ agotados }} agotados</span></ng-container>
+          <ng-container *ngIf="porAgotarse"> · {{ porAgotarse }} por agotarse</ng-container>
         </span>
       </div>
       <button type="button" class="fb-btn outline" (click)="abrirModal()">
@@ -14,6 +15,11 @@
         Nuevo
       </button>
     </header>
+
+    <div class="valor fb-card" *ngIf="auth.isAdmin() && !cargando">
+      <span>Valor del inventario a costo</span>
+      <strong class="fb-money">$ {{ valorInventario | number:'1.0-0' }}</strong>
+    </div>
 
     <div class="fb-row">
       <label class="fb-search">
@@ -32,7 +38,7 @@
 
     <div class="fb-chips" role="group" aria-label="Filtrar por categoría">
       <button type="button" class="fb-chip" [class.on]="!categoriaFiltro && !soloStockBajo" (click)="setCategoria('')">Todos</button>
-      <button type="button" class="fb-chip warn" [class.on]="soloStockBajo" (click)="toggleStockBajo()">Stock bajo</button>
+      <button type="button" class="fb-chip warn" [class.on]="soloStockBajo" (click)="toggleStockBajo()">Por reponer</button>
       <button
         type="button"
         class="fb-chip"
@@ -63,15 +69,18 @@
         <span class="info">
           <span class="name">{{ p.elemento }}</span>
           <span class="meta fb-mono">
-            {{ p.numero_inventario || p.codigo }}<ng-container *ngIf="p.ubicacion"> · {{ p.ubicacion }}</ng-container>
+            <ng-container *ngIf="p.numero_inventario; else codInterno">N.º {{ p.numero_inventario }}</ng-container>
+            <ng-template #codInterno>{{ p.codigo }}</ng-template>
+            <ng-container *ngIf="p.ubicacion"> · {{ p.ubicacion }}</ng-container>
           </span>
           <span class="meta" *ngIf="p.marca || p.moto">
             {{ p.marca }}<ng-container *ngIf="p.marca && p.moto"> · </ng-container>{{ p.moto }}
           </span>
           <span class="bottom">
             <span class="price fb-money">$ {{ p.precio | number:'1.0-0' }}</span>
-            <span class="fb-pill warn" *ngIf="p.stock < stockBajoLimite">{{ p.stock <= 0 ? 'Agotado' : 'Quedan ' + p.stock }}</span>
-            <span class="fb-pill" *ngIf="p.stock >= stockBajoLimite">Stock {{ p.stock }}</span>
+            <span class="fb-pill warn" *ngIf="p.stock <= 0">Agotado</span>
+            <span class="fb-pill accent" *ngIf="p.stock > 0 && p.stock <= umbral">{{ p.stock === 1 ? 'Última unidad' : 'Quedan ' + p.stock }}</span>
+            <span class="fb-pill" *ngIf="p.stock > umbral">Stock {{ p.stock }}</span>
           </span>
         </span>
 

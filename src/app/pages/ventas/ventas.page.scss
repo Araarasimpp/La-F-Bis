@@ -142,3 +142,59 @@
     font-size: 22px;
   }
 }
+
+.count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fb-muted);
+  cursor: pointer;
+}
+
+input[type='checkbox'].fb-switch.sm {
+  width: 40px;
+  height: 24px;
+
+  &::after {
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:checked::after {
+    left: 19px;
+  }
+}
+
+kbd {
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--fb-line);
+  background: var(--fb-surface);
+  font-family: var(--fb-font-mono);
+  font-size: 11px;
+}
+
+/* El F2 no aplica en el celular */
+@media (max-width: 991px) {
+  .atajo {
+    display: none;
+  }
+}
+
+.pos-cart {
+  scrollbar-width: thin;
+  scrollbar-color: var(--fb-surface-3) transparent;
+}
