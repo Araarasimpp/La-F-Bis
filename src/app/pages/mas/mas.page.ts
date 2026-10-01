@@ -34,6 +34,7 @@ export class MasPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.calcular();
     this.sub = this.themeService.isDark$.subscribe(v => (this.isDark = v));
   }
 
@@ -41,20 +42,21 @@ export class MasPage implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
-  get rolTexto(): string {
+  rolTexto = '';
+  gestion: Acceso[] = [];
+
+  /** Se calcula una vez; un getter con arreglos nuevos causaba un bucle de renderizado */
+  private calcular() {
     const nombres: Record<string, string> = {
       administrador: 'Administrador',
       supervisor: 'Supervisor',
       vendedor: 'Vendedor',
       inventario: 'Inventario'
     };
-    return nombres[this.auth.rol] || 'Sin rol';
-  }
-
-  get gestion(): Acceso[] {
     const r = this.auth.rol;
-    const lista: Acceso[] = [];
+    this.rolTexto = nombres[r] || 'Sin rol';
 
+    const lista: Acceso[] = [];
     if (r === 'administrador') {
       lista.push({ label: 'Usuarios', detalle: 'Roles y acceso', icon: 'people-outline', url: '/usuarios' });
     }
@@ -64,8 +66,11 @@ export class MasPage implements OnInit, OnDestroy {
     if (r === 'administrador' || r === 'supervisor') {
       lista.push({ label: 'Historial de motos', detalle: 'Visitas al taller por placa', icon: 'bicycle-outline', url: '/historial-moto' });
     }
+    this.gestion = lista;
+  }
 
-    return lista;
+  ionViewWillEnter() {
+    this.calcular();
   }
 
   go(url: string) {

@@ -56,17 +56,32 @@ export class TabBarComponent implements OnInit, OnDestroy {
     document.body.classList.remove('fb-has-tabbar');
   }
 
+  // Listas calculadas una sola vez por navegación.
+  // (Si fueran getters que devuelven arreglos nuevos, Angular recrearía los
+  //  botones e íconos en cada ciclo y la app entraría en un bucle infinito.)
+  izquierda: Tab[] = [];
+  derecha: Tab[] = [];
+  puedeVender = false;
+  enVenta = false;
+  private rolCalculado = '';
+
   private actualizar(url: string) {
     this.url = url.split('?')[0];
     this.visible = !!this.auth.rol && !['/', '', '/register'].includes(this.url);
+    this.enVenta = this.url.startsWith('/ventas');
     document.body.classList.toggle('fb-has-tabbar', this.visible);
+
+    if (this.auth.rol !== this.rolCalculado) {
+      this.rolCalculado = this.auth.rol;
+      this.calcularTabs();
+    }
   }
 
   private tiene(...roles: string[]) {
     return roles.includes(this.auth.rol);
   }
 
-  get tabs(): Tab[] {
+  private calcularTabs() {
     const t: Tab[] = [];
 
     if (this.tiene('administrador', 'supervisor')) {
@@ -86,25 +101,14 @@ export class TabBarComponent implements OnInit, OnDestroy {
       match: ['/mas', '/usuarios', '/categorias', '/settings', '/historial-moto']
     });
 
-    return t;
+    const mitad = Math.ceil(t.length / 2);
+    this.izquierda = t.slice(0, mitad);
+    this.derecha = t.slice(mitad);
+    this.puedeVender = this.tiene('administrador', 'supervisor', 'vendedor');
   }
 
-  get izquierda() {
-    const t = this.tabs;
-    return t.slice(0, Math.ceil(t.length / 2));
-  }
-
-  get derecha() {
-    const t = this.tabs;
-    return t.slice(Math.ceil(t.length / 2));
-  }
-
-  get puedeVender() {
-    return this.tiene('administrador', 'supervisor', 'vendedor');
-  }
-
-  get enVenta() {
-    return this.url.startsWith('/ventas');
+  trackUrl(_: number, t: Tab) {
+    return t.url;
   }
 
   activo(tab: Tab) {

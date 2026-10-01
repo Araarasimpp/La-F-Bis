@@ -1,7 +1,7 @@
 <nav class="tabbar" *ngIf="visible" aria-label="Navegación principal">
 
   <a
-    *ngFor="let t of izquierda"
+    *ngFor="let t of izquierda; trackBy: trackUrl"
     class="tab"
     [routerLink]="t.url"
     [class.active]="activo(t)"
@@ -23,7 +23,7 @@
   </button>
 
   <a
-    *ngFor="let t of derecha"
+    *ngFor="let t of derecha; trackBy: trackUrl"
     class="tab"
     [routerLink]="t.url"
     [class.active]="activo(t)"
