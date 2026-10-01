@@ -1,80 +1,66 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DataService } from '../../services/data.service';
 import { Router } from '@angular/router';
-import { ThemeService } from '../../services/theme';
-import { SupabaseService } from '../../services/supabase.service';
-import { IonMenuButton } from '@ionic/angular/standalone';
-import { AuthService } from 'src/app/services/auth.service';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import {
-  BarcodeScanner,
-  BarcodeFormat
-} from '@capacitor-mlkit/barcode-scanning';
-import { addIcons } from 'ionicons';
-import { 
-  searchOutline
-} from 'ionicons/icons';
+import { BarcodeScanner, BarcodeFormat } from '@capacitor-mlkit/barcode-scanning';
+
 import { IONIC_IMPORTS } from 'src/app/shared/ionic-imports';
+import { DataService } from '../../services/data.service';
+import { SupabaseService } from '../../services/supabase.service';
+import { AuthService } from 'src/app/services/auth.service';
+
+const STOCK_BAJO = 5;
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule, FormsModule, ...IONIC_IMPORTS, IonMenuButton],
+  imports: [CommonModule, FormsModule, ...IONIC_IMPORTS],
   templateUrl: './inventory.page.html',
   styleUrls: ['./inventory.page.scss']
 })
 export class InventoryPage implements OnInit, OnDestroy {
 
-  isDark = false;
-  currentRoute = '';
+  readonly stockBajoLimite = STOCK_BAJO;
 
-  // 🔥 SCANNER
+  // Lector de código de barras por teclado
   barcodeBuffer = '';
   lastKeyTime = 0;
 
-  // 🔥 UI
+  // Hoja del formulario
   showModal = false;
+  guardando = false;
   previewImage: string | ArrayBuffer | null = null;
-  selectedFile!: File;
+  selectedFile?: File;
 
-  // 🔥 DATA
+  // Datos
   productos: any[] = [];
   productosFiltrados: any[] = [];
   categorias: any[] = [];
-  // 🔍 COMBOBOX DE CATEGORÍA (en el modal)
+  cargando = true;
+
+  // Combobox de categoría (dentro del formulario)
   categoriaBusqueda = '';
   categoriasBusquedaResultados: any[] = [];
   mostrarDropdownCategorias = false;
 
-  // 🔍 filtros
+  // Filtros de la lista
   busqueda = '';
   categoriaFiltro = '';
+  soloStockBajo = false;
 
-  // 🔥 FORM = ÚNICA FUENTE DE VERDAD
   form: any = this.getEmptyForm();
 
   constructor(
     private dataService: DataService,
     private router: Router,
-    public themeService: ThemeService,
     private supabaseService: SupabaseService,
     public auth: AuthService
-  ) {
-    addIcons({
-      searchOutline
-    });
-  }
+  ) {}
 
   ngOnInit() {
-    this.themeService.isDark$.subscribe(v => this.isDark = v);
-
-    this.currentRoute = this.router.url;
-
     this.cargarProductos();
     this.cargarCategorias();
-
     window.addEventListener('keydown', this.handleScanner);
   }
 
@@ -82,8 +68,20 @@ export class InventoryPage implements OnInit, OnDestroy {
     window.removeEventListener('keydown', this.handleScanner);
   }
 
+  get editando() {
+    return !!this.form?.id;
+  }
+
+  get totalStockBajo(): number {
+    return this.productos.filter(p => p.stock < STOCK_BAJO).length;
+  }
+
+  trackId(_: number, p: any) {
+    return p.id;
+  }
+
   // =========================
-  // 📦 FORM
+  // 📦 Formulario
   // =========================
 
   getEmptyForm() {
@@ -93,6 +91,7 @@ export class InventoryPage implements OnInit, OnDestroy {
       codigo_barras: '',
       codigo: '',
       elemento: '',
+      ubicacion: '',
       marca: '',
       proveedor: '',
       moto: '',
@@ -108,12 +107,32 @@ export class InventoryPage implements OnInit, OnDestroy {
   calcularPrecio() {
     const costo = Number(this.form.costo) || 0;
     const ganancia = Number(this.form.porcentaje_ganancia) || 0;
+    this.form.precio = Math.round(costo + (costo * ganancia) / 100);
+  }
 
-    this.form.precio = costo + (costo * ganancia) / 100;
+  /** Si se edita el precio a mano, el % de ganancia se ajusta solo */
+  recalcularGanancia() {
+    const costo = Number(this.form.costo) || 0;
+    const precio = Number(this.form.precio) || 0;
+    this.form.porcentaje_ganancia = costo > 0 ? Math.round(((precio - costo) / costo) * 1000) / 10 : 0;
+  }
+
+  cambiarStock(delta: number) {
+    this.form.stock = Math.max(0, (Number(this.form.stock) || 0) + delta);
+  }
+
+  formatearNumero(valor: number | string): string {
+    if (!valor) return '';
+    return new Intl.NumberFormat('es-CO').format(Number(valor));
+  }
+
+  parseNumero(valor: string): number {
+    if (!valor) return 0;
+    return Number(valor.replace(/\./g, '').replace(/[^\d]/g, ''));
   }
 
   // =========================
-  // 🔍 COMBOBOX CATEGORÍA
+  // 🔍 Combobox de categoría
   // =========================
 
   filtrarCategoriasBusqueda() {
@@ -121,9 +140,7 @@ export class InventoryPage implements OnInit, OnDestroy {
 
     this.categoriasBusquedaResultados = !texto
       ? this.categorias
-      : this.categorias.filter(c =>
-          c.nombre?.toLowerCase().includes(texto)
-        );
+      : this.categorias.filter(c => c.nombre?.toLowerCase().includes(texto));
   }
 
   abrirDropdownCategorias() {
@@ -132,10 +149,8 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   cerrarDropdownCategorias() {
-    // 🔥 delay para que el (mousedown) de la opción alcance a dispararse antes del blur
-    setTimeout(() => {
-      this.mostrarDropdownCategorias = false;
-    }, 150);
+    // Pequeña espera para que el toque en una opción alcance a registrarse
+    setTimeout(() => (this.mostrarDropdownCategorias = false), 150);
   }
 
   seleccionarCategoria(categoria: any) {
@@ -151,50 +166,69 @@ export class InventoryPage implements OnInit, OnDestroy {
   }
 
   // =========================
-  // 💰 FORMATO MONEDA
+  // 📷 Imagen
   // =========================
 
-  formatearNumero(valor: number | string): string {
-    if (!valor) return '';
-    return new Intl.NumberFormat('es-CO').format(Number(valor));
-  }
-
-  parseNumero(valor: string): number {
-    if (!valor) return 0;
-    return Number(valor.replace(/\./g, '').replace(/[^\d]/g, ''));
-  }
-
-  // =========================
-  // 📷 IMAGEN (PREVIEW INMEDIATO)
-  // =========================
-
-  onFileChange(event: any) {
-    const file = event.target.files[0];
+  onFileSelected(event: any) {
+    const file = event.target.files?.[0];
     if (!file) return;
 
     this.selectedFile = file;
 
     const reader = new FileReader();
-    reader.onload = () => {
-      this.previewImage = reader.result; // 🔥 preview instantáneo
-    };
+    reader.onload = () => (this.previewImage = reader.result);
     reader.readAsDataURL(file);
   }
 
+  async tomarFoto() {
+    await this.obtenerFoto(CameraSource.Camera);
+  }
+
+  async elegirGaleria() {
+    await this.obtenerFoto(CameraSource.Photos);
+  }
+
+  private async obtenerFoto(source: CameraSource) {
+    try {
+      const photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.Uri,
+        source
+      });
+
+      if (!photo.webPath) return;
+
+      this.previewImage = photo.webPath;
+
+      const response = await fetch(photo.webPath);
+      const blob = await response.blob();
+
+      this.selectedFile = new File([blob], `producto_${Date.now()}.jpg`, { type: blob.type });
+    } catch (e) {
+      console.log('Foto cancelada', e);
+    }
+  }
+
   // =========================
-  // 🔫 SCANNER GLOBAL
+  // 🔫 Códigos de barras
   // =========================
 
   handleScanner = (event: KeyboardEvent) => {
-    const now = Date.now();
-    const diff = now - this.lastKeyTime;
-    this.lastKeyTime = now;
+    const ahora = Date.now();
+    const diff = ahora - this.lastKeyTime;
+    this.lastKeyTime = ahora;
 
     if (diff > 100) this.barcodeBuffer = '';
 
     if (event.key === 'Enter') {
       if (this.barcodeBuffer.length > 5) {
-        this.procesarCodigoBarras(this.barcodeBuffer);
+        // Con el formulario abierto, el código llena el campo en vez de abrir otro producto
+        if (this.showModal) {
+          this.form.codigo_barras = this.barcodeBuffer;
+        } else {
+          this.procesarCodigoBarras(this.barcodeBuffer);
+        }
       }
       this.barcodeBuffer = '';
       return;
@@ -205,158 +239,14 @@ export class InventoryPage implements OnInit, OnDestroy {
     }
   };
 
-  async procesarCodigoBarras(codigo: string) {
-    const { data } = await this.supabaseService.supabase
-      .from('productos')
-      .select(`*, categorias_repuestos(nombre)`)
-      .eq('codigo_barras', codigo)
-      .maybeSingle();
-
-    if (data) {
-      this.abrirModal(data);
-    } else {
-      const nuevo = this.getEmptyForm();
-      nuevo.codigo_barras = codigo;
-      this.abrirModal(nuevo);
-    }
-  }
-
-  // =========================
-  // 📦 CRUD
-  // =========================
-
-  async cargarProductos() {
-    this.productos = await this.dataService.getProductos();
-    this.filtrar();
-  }
-
-  async cargarCategorias() {
-    const { data } = await this.supabaseService.supabase
-      .from('categorias_repuestos')
-      .select('*');
-
-    this.categorias = data || [];
-    this.categoriasBusquedaResultados = this.categorias;
-  }
-
-  abrirModal(producto?: any) {
-    this.showModal = true;
-    this.selectedFile = undefined as any;
-    this.previewImage = null;
-
-    if (producto && producto.id) {
-      this.form = {
-        ...producto,
-        id: producto.id,
-        categoria_id: producto.categoria_id || null
-      };
-
-      this.previewImage = producto.imagen_url;
-
-      // 🔥 precargar el texto de la categoría actual
-      this.categoriaBusqueda = producto.categorias_repuestos?.nombre || '';
-
-    } else {
-      this.form = this.getEmptyForm();
-      this.categoriaBusqueda = '';   // 🔥 nuevo
-
-      if (producto?.codigo_barras) {
-        this.form.codigo_barras = producto.codigo_barras;
-      }
-    }
-  }
-
-  cerrarModal() {
-    this.showModal = false;
-  }
-
-  async guardar() {
-
-    if (!this.form.elemento) {
-      alert('Completa los campos');
-      return;
-    }
-
-    const costo = Number(this.form.costo) || 0;
-    const precio = Number(this.form.precio) || 0;
-
-    this.form.porcentaje_ganancia =
-      costo > 0 ? ((precio - costo) / costo) * 100 : 0;
-
-    console.log('GUARDANDO:', this.form);
-
-    if (this.form.id) {
-      await this.dataService.actualizarProducto(
-        this.form.id,
-        this.form,
-        this.selectedFile
-      );
-    } else {
-      await this.dataService.crearProducto(
-        this.form,
-        this.selectedFile
-      );
-    }
-
-    this.cerrarModal();
-    this.cargarProductos();
-  }
-
-  async eliminar(id: string) {
-
-    const { error } = await this.dataService.eliminarProducto(id);
-
-    if (error) {
-      console.log(error);
-      return;
-    }
-
-    this.productos = this.productos.filter(p => p.id !== id);
-    this.productosFiltrados = this.productosFiltrados.filter(p => p.id !== id);
-
-  }
-
-  async tomarFoto() {
-
+  /** Abre la cámara y devuelve el código leído (o null) */
+  private async leerCodigo(): Promise<string | null> {
     try {
-
-      const photo = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.Uri,
-        source: CameraSource.Camera
-      });
-
-      if (!photo.webPath) return;
-
-      this.previewImage = photo.webPath;
-
-      const response = await fetch(photo.webPath);
-      const blob = await response.blob();
-
-      this.selectedFile = new File(
-        [blob],
-        `producto_${Date.now()}.jpg`,
-        {
-          type: blob.type
-        }
-      );
-
-    } catch (e) {
-      console.log('Cámara cancelada', e);
-    }
-
-  }
-
-  async escanearCodigo() {
-
-    try {
-
       const supported = await BarcodeScanner.isSupported();
 
       if (!supported.supported) {
-        alert('Este dispositivo no soporta el escáner.');
-        return;
+        alert('Este dispositivo no soporta el escáner. Usa un lector USB o escribe el código.');
+        return null;
       }
 
       await BarcodeScanner.requestPermissions();
@@ -372,118 +262,182 @@ export class InventoryPage implements OnInit, OnDestroy {
         ]
       });
 
-      if (result.barcodes.length === 0) {
-        return;
-      }
-
-      const codigo = result.barcodes[0].displayValue;
-
-      if (codigo) {
-        await this.procesarCodigoBarras(codigo);
-      }
-
+      return result.barcodes[0]?.displayValue || null;
     } catch (e) {
       console.error(e);
+      return null;
     }
-
   }
 
-  async elegirGaleria() {
+  /** Botón de escanear de la lista: abre el producto o crea uno nuevo con ese código */
+  async escanearCodigo() {
+    const codigo = await this.leerCodigo();
+    if (codigo) await this.procesarCodigoBarras(codigo);
+  }
+
+  /** Botón de escanear dentro del formulario: solo llena el campo */
+  async escanearParaFormulario() {
+    const codigo = await this.leerCodigo();
+    if (codigo) this.form.codigo_barras = codigo;
+  }
+
+  async procesarCodigoBarras(codigo: string) {
+    const { data } = await this.supabaseService.supabase
+      .from('productos')
+      .select(`*, categorias_repuestos(nombre)`)
+      .eq('codigo_barras', codigo)
+      .maybeSingle();
+
+    if (data) {
+      this.abrirModal(data);
+    } else {
+      this.abrirModal({ codigo_barras: codigo });
+    }
+  }
+
+  // =========================
+  // 📦 CRUD
+  // =========================
+
+  async cargarProductos() {
+    this.cargando = true;
+    this.productos = await this.dataService.getProductos();
+    this.cargando = false;
+    this.filtrar();
+  }
+
+  async cargarCategorias() {
+    this.categorias = await this.dataService.getCategorias();
+    this.categoriasBusquedaResultados = this.categorias;
+  }
+
+  abrirModal(producto?: any) {
+    this.selectedFile = undefined;
+    this.previewImage = null;
+    this.mostrarDropdownCategorias = false;
+
+    if (producto?.id) {
+      this.form = { ...producto, categoria_id: producto.categoria_id || null };
+      this.previewImage = producto.imagen_url || null;
+      this.categoriaBusqueda = producto.categorias_repuestos?.nombre || '';
+    } else {
+      this.form = this.getEmptyForm();
+      this.categoriaBusqueda = '';
+
+      if (producto?.codigo_barras) {
+        this.form.codigo_barras = producto.codigo_barras;
+      }
+    }
+
+    this.showModal = true;
+  }
+
+  cerrarModal() {
+    this.showModal = false;
+  }
+
+  async guardarProducto() {
+    if (this.guardando) return;
+
+    if (!this.form.elemento?.trim()) {
+      alert('Escribe el nombre del producto');
+      return;
+    }
+
+    if (!Number(this.form.precio)) {
+      alert('Escribe el precio de venta');
+      return;
+    }
+
+    // El código interno es obligatorio y único en la base de datos
+    if (!this.form.codigo?.trim()) {
+      this.form.codigo =
+        this.form.codigo_barras?.trim() ||
+        this.form.numero_inventario?.trim() ||
+        'INT-' + Date.now().toString(36).toUpperCase();
+    }
+
+    this.guardando = true;
+
+    const datos = { ...this.form };
+    delete datos.categorias_repuestos;
 
     try {
+      if (datos.id) {
+        await this.dataService.actualizarProducto(datos.id, datos, this.selectedFile);
+      } else {
+        await this.dataService.crearProducto(datos, this.selectedFile);
+      }
 
-      const photo = await Camera.getPhoto({
-        quality: 90,
-        resultType: CameraResultType.Uri,
-        source: CameraSource.Photos
-      });
+      this.cerrarModal();
+      await this.cargarProductos();
 
-      if (!photo.webPath) return;
+    } catch (error: any) {
+      console.error(error);
 
-      this.previewImage = photo.webPath;
+      if (error?.code === '23505') {
+        alert('Ya existe un producto con ese código interno o código de barras.');
+      } else {
+        alert('No se pudo guardar el producto.');
+      }
+    } finally {
+      this.guardando = false;
+    }
+  }
 
-      const response = await fetch(photo.webPath);
-      const blob = await response.blob();
-
-      this.selectedFile = new File(
-        [blob],
-        `producto_${Date.now()}.jpg`,
-        {
-          type: blob.type
-        }
-      );
-
-    } catch (e) {
-      console.log(e);
+  async eliminar(id: string) {
+    if (!confirm('¿Eliminar este producto? También se borran sus líneas en el historial de ventas.')) {
+      return;
     }
 
+    const { error } = await this.dataService.eliminarProducto(id);
+
+    if (error) {
+      console.error(error);
+      alert('No se pudo eliminar el producto.');
+      return;
+    }
+
+    this.productos = this.productos.filter(p => p.id !== id);
+    this.filtrar();
+    this.cerrarModal();
   }
 
   // =========================
-  // 🔍 BUSQUEDA PRO
+  // 🔍 Búsqueda y filtros
   // =========================
+
+  setCategoria(nombre: string) {
+    this.categoriaFiltro = nombre;
+    this.soloStockBajo = false;
+    this.filtrar();
+  }
+
+  toggleStockBajo() {
+    this.soloStockBajo = !this.soloStockBajo;
+    this.categoriaFiltro = '';
+    this.filtrar();
+  }
 
   filtrar() {
     const palabras = this.busqueda.toLowerCase().trim().split(' ').filter(p => p);
 
     this.productosFiltrados = this.productos.filter(p => {
-
       const texto = `
-        ${p.elemento}
-        ${p.marca}
-        ${p.codigo}
-        ${p.codigo_barras}
-        ${p.numero_inventario}
-        ${p.proveedor}
-        ${p.moto}
-        ${p.precio}
-        ${p.costo}
-        ${p.stock}
-        ${p.categorias_repuestos?.nombre}
+        ${p.elemento} ${p.marca} ${p.codigo} ${p.codigo_barras}
+        ${p.numero_inventario} ${p.proveedor} ${p.moto} ${p.ubicacion}
+        ${p.precio} ${p.costo} ${p.stock} ${p.categorias_repuestos?.nombre}
       `.toLowerCase();
 
       const matchBusqueda = palabras.every(w => texto.includes(w));
+      const matchCategoria = !this.categoriaFiltro || p.categorias_repuestos?.nombre === this.categoriaFiltro;
+      const matchStock = !this.soloStockBajo || p.stock < STOCK_BAJO;
 
-      const matchCategoria =
-        !this.categoriaFiltro ||
-        p.categorias_repuestos?.nombre === this.categoriaFiltro;
-
-      return matchBusqueda && matchCategoria;
+      return matchBusqueda && matchCategoria && matchStock;
     });
-  }
-
-  onSearch(event: any) {
-    this.busqueda = event.target.value;
-    this.filtrar();
-  }
-
-  // =========================
-  // 🚪 NAV
-  // =========================
-
-  logout() {
-    localStorage.clear();
-    this.router.navigateByUrl('/');
   }
 
   go(path: string) {
     this.router.navigateByUrl(path);
   }
-
-  // 🔥 compatibilidad con tu HTML actual
-  get editando() {
-    return !!this.form?.id;
-  }
-
-  // 🔥 alias para input file
-  onFileSelected(event: any) {
-    this.onFileChange(event);
-  }
-
-  // 🔥 alias para botón guardar
-  guardarProducto() {
-    this.guardar();
-  }
-
 }
-

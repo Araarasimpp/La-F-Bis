@@ -1,91 +1,56 @@
 <ion-content>
-  <div class="layout">
+  <div class="fb-page narrow">
 
-    <div class="main">
+    <header class="fb-header">
+      <div>
+        <h1 class="fb-title">Configuración</h1>
+        <span class="fb-sub">Tu perfil y el comportamiento de la caja</span>
+      </div>
+    </header>
 
-      <div class="topbar">
-        <ion-menu-button></ion-menu-button>
+    <section class="fb-card block">
+      <h2 class="fb-eyebrow">Perfil</h2>
+
+      <div class="avatar-row">
+        <span class="fb-avatar lg">
+          <img *ngIf="profile.avatar_url; else ini" [src]="profile.avatar_url" alt="">
+          <ng-template #ini>{{ profile.username?.charAt(0)?.toUpperCase() || '?' }}</ng-template>
+        </span>
+        <label class="fb-btn ghost upload">
+          <ion-spinner *ngIf="subiendo" name="crescent"></ion-spinner>
+          <ion-icon *ngIf="!subiendo" name="cloud-upload-outline" aria-hidden="true"></ion-icon>
+          {{ subiendo ? 'Subiendo…' : 'Cambiar foto' }}
+          <input type="file" accept="image/*" class="fb-sr" (change)="onAvatarSelected($event)">
+        </label>
       </div>
 
-      <div class="header-seccion">
-        <h1>Configuración</h1>
-        <p>Personaliza tu sistema</p>
-      </div>
+      <label class="fb-field">
+        <span>Nombre de usuario</span>
+        <input type="text" autocomplete="username" [(ngModel)]="profile.username" (input)="guardado = false">
+      </label>
 
-      <div class="grid">
+      <label class="fb-field">
+        <span>Nombre del negocio</span>
+        <input type="text" placeholder="Repuestos La F Bis" [(ngModel)]="profile.nombre_negocio" (input)="guardado = false">
+      </label>
+    </section>
 
-        <div class="card">
-          <div class="card-title">
-            <ion-icon name="person-outline" color="primary"></ion-icon>
-            Perfil
-          </div>
+    <section class="fb-card block">
+      <h2 class="fb-eyebrow">Caja</h2>
 
-          <div class="avatar-section">
-            <div class="avatar-wrapper">
-              <img
-                *ngIf="profile.avatar_url"
-                [src]="profile.avatar_url"
-                class="avatar">
+      <label class="switch-row">
+        <span class="switch-text">
+          <strong>Imprimir ticket automáticamente</strong>
+          <span>Al terminar una venta en el computador abre la impresión del ticket.</span>
+        </span>
+        <input type="checkbox" class="fb-switch" [(ngModel)]="settings.ticket_auto" (change)="guardado = false">
+      </label>
+    </section>
 
-              <div
-                *ngIf="!profile.avatar_url"
-                class="avatar empty">
-                {{ profile.username?.charAt(0)?.toUpperCase() || '?' }}
-              </div>
-            </div>
-
-            <label class="upload-btn">
-              <ion-icon name="cloud-upload-outline"></ion-icon>
-              <span>Cambiar avatar</span>
-              <input
-                type="file"
-                hidden
-                (change)="onAvatarSelected($event)">
-            </label>
-          </div>
-
-          <div class="input-group">
-            <label>Nombre de usuario</label>
-            <input
-              type="text"
-              placeholder="Username"
-              [(ngModel)]="profile.username">
-          </div>
-
-          <div class="input-group">
-            <label>Nombre del negocio</label>
-            <input
-              type="text"
-              placeholder="Nombre negocio"
-              [(ngModel)]="profile.nombre_negocio">
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">
-            <ion-icon name="settings-outline" color="primary"></ion-icon>
-            Sistema
-          </div>
-
-          <div class="switch-row">
-            <div class="switch-info">
-              <span>Imprimir automático</span>
-              <p>Generar ticket de venta inmediatamente</p>
-            </div>
-            <ion-toggle [(ngModel)]="settings.ticket_auto" mode="ios"></ion-toggle>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="action-footer">
-        <button class="save-btn" (click)="guardar()">
-          <ion-icon name="save-outline" *ngIf="!loading"></ion-icon>
-          <span>{{ loading ? 'Guardando...' : 'Guardar cambios' }}</span>
-        </button>
-      </div>
-
-    </div>
-
+    <button type="button" class="fb-btn primary big block" (click)="guardar()" [disabled]="loading">
+      <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+      <ion-icon *ngIf="guardado && !loading" name="checkmark-outline" aria-hidden="true"></ion-icon>
+      {{ loading ? 'Guardando…' : guardado ? 'Cambios guardados' : 'Guardar cambios' }}
+    </button>
   </div>
 </ion-content>

@@ -1,77 +1,69 @@
 <ion-content>
+  <div class="fb-page narrow">
 
-  <div class="layout">
-
-    <!-- MAIN -->
-    <div class="main">
-
-      <div class="topbar">
-        <ion-menu-button></ion-menu-button>
+    <header class="fb-header">
+      <div>
+        <h1 class="fb-title">Categorías</h1>
+        <span class="fb-sub">{{ categorias.length }} categorías para agrupar el inventario</span>
       </div>
+      <button type="button" class="fb-btn outline" (click)="abrirModal()">
+        <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+        Nueva
+      </button>
+    </header>
 
-      <div class="toolbar">
-        <!-- 🔍 BUSCADOR -->
-        <div class="group">
-          <ion-icon class="icon" name="search-outline"></ion-icon>
-          <input
-            class="filtrar"
-            type="text"
-            placeholder="Buscar categoría..."
-            [(ngModel)]="busqueda"
-            (input)="filtrar()"
-          />
-        </div>
+    <label class="fb-search">
+      <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+      <span class="fb-sr">Buscar categoría</span>
+      <input type="search" placeholder="Buscar categoría" [(ngModel)]="busqueda" (input)="filtrar()">
+    </label>
 
-        <!-- ➕ BOTÓN -->
-        <button class="fab" (click)="abrirModal()">+</button>
-      </div>
+    <ul class="list fb-card" *ngIf="categoriasFiltradas.length">
+      <li *ngFor="let c of categoriasFiltradas">
+        <ion-icon name="pricetag-outline" class="tag" aria-hidden="true"></ion-icon>
+        <span class="name">{{ c.nombre }}</span>
+        <button type="button" class="fb-icon-btn plain sm" (click)="abrirModal(c)" [attr.aria-label]="'Editar ' + c.nombre">
+          <ion-icon name="create-outline"></ion-icon>
+        </button>
+        <button type="button" class="fb-icon-btn plain sm danger" (click)="eliminar(c.id)" [attr.aria-label]="'Eliminar ' + c.nombre">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </li>
+    </ul>
 
-      <!-- 🗂️ GRID -->
-      <div class="grid">
-
-        <div class="card" *ngFor="let c of categoriasFiltradas">
-          <h3>{{ c.nombre | uppercase }}</h3>
-
-          <div class="actions">
-            <button (click)="abrirModal(c)">Editar</button>
-            <button class="danger" (click)="eliminar(c.id)">Eliminar</button>
-          </div>
-        </div>
-
-        <div class="empty" *ngIf="categoriasFiltradas.length === 0">
-          No se encontraron categorías
-        </div>
-
-      </div>
-
-      <!-- 🧾 MODAL -->
-      <div class="modal" *ngIf="showModal">
-
-        <div class="modal-content">
-
-          <h2>{{ editando ? 'Editar categoría' : 'Nueva categoría' }}</h2>
-
-          <div class="input-group">
-            <label>Nombre</label>
-            <input
-              [(ngModel)]="form.nombre"
-              placeholder="Ej: Frenos, Motor, Eléctrico..."
-              (keyup.enter)="guardarCategoria()"
-            />
-          </div>
-
-          <!-- BOTONES -->
-          <div class="modal-actions">
-            <button (click)="guardarCategoria()" [disabled]="guardando">Guardar</button>
-            <button (click)="cerrarModal()">Cancelar</button>
-          </div>
-
-        </div>
-
-      </div>
-
+    <div class="fb-empty" *ngIf="!categoriasFiltradas.length">
+      <ion-icon name="pricetag-outline"></ion-icon>
+      <strong>No se encontraron categorías</strong>
+      <span>Crea una nueva con el botón de arriba.</span>
     </div>
-
   </div>
 
+  <!-- Formulario -->
+  <div class="fb-sheet-backdrop" *ngIf="showModal">
+    <section class="fb-sheet" role="dialog" aria-modal="true" [attr.aria-label]="editando ? 'Editar categoría' : 'Nueva categoría'">
+      <header class="fb-sheet-head">
+        <h2 class="fb-title sm">{{ editando ? 'Editar categoría' : 'Nueva categoría' }}</h2>
+        <button type="button" class="fb-icon-btn plain sm" (click)="cerrarModal()" aria-label="Cerrar">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </header>
+
+      <div class="fb-sheet-body">
+        <label class="fb-field">
+          <span>Nombre</span>
+          <input
+            [(ngModel)]="form.nombre"
+            placeholder="Ej: Frenos, Motor, Eléctrico…"
+            (keyup.enter)="guardarCategoria()">
+        </label>
+      </div>
+
+      <footer class="fb-sheet-foot">
+        <button type="button" class="fb-btn ghost" (click)="cerrarModal()">Cancelar</button>
+        <button type="button" class="fb-btn primary grow" (click)="guardarCategoria()" [disabled]="guardando">
+          {{ guardando ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </footer>
+    </section>
+  </div>
 </ion-content>

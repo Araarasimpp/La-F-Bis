@@ -1,69 +1,85 @@
 <ion-content>
+  <div class="fb-page narrow">
 
-  <div class="layout">
-
-    <!-- MAIN -->
-    <div class="main">
-
-      <!-- TOPBAR (Menú Hamburguesa) -->
-      <div class="topbar">
-        <ion-menu-button></ion-menu-button>
+    <header class="fb-header">
+      <div>
+        <h1 class="fb-title">Historial de motos</h1>
+        <span class="fb-sub">Busca por placa para ver cada visita al taller</span>
       </div>
+    </header>
 
-      <!-- NAVBAR / TOOLBAR (Buscador por Placa) -->
-      <div class="toolbar">
-        <div class="group">
-          <ion-icon class="icon" name="search-outline"></ion-icon>
-          <input 
-            class="filtrar"
-            type="text"
-            placeholder="Digitar placa de la moto (Ej: KUX84E)..."
-            [(ngModel)]="placaBuscar"
-            (keyup.enter)="buscarHistorial()"
-          />
-        </div>
-        <button class="scan-btn" (click)="buscarHistorial()">
-          Buscar
-        </button>
-      </div>
+    <form class="buscador fb-card" (ngSubmit)="buscarHistorial()">
+      <label class="fb-sr" for="placa">Placa de la moto</label>
+      <input
+        id="placa"
+        name="placa"
+        class="fb-plate"
+        maxlength="7"
+        autocapitalize="characters"
+        autocomplete="off"
+        placeholder="ABC12D"
+        [ngModel]="placaBuscar"
+        (ngModelChange)="setPlaca($event)">
+      <button type="submit" class="fb-btn primary" [disabled]="!placaBuscar || buscando">
+        <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+        Buscar
+      </button>
+    </form>
 
-      <!-- 🔄 INDICADOR DE CARGA -->
-      <div class="loading-state" *ngIf="buscando" style="text-align: center; padding: 20px;">
-        <ion-spinner name="crescent" color="primary"></ion-spinner>
-        <p>Buscando historial clínico...</p>
-      </div>
-
-      <!-- 🏍️ GRID / LISTADO DE HISTORIALES -->
-      <div class="grid" *ngIf="historiales.length > 0 && !buscando">
-
-        <div class="card" *ngFor="let h of historiales">
-          
-          <div class="card-header-date">
-            <h3>📅 {{ h.fecha | date:'dd/MM/yyyy' }}</h3>
-            <p>{{ h.fecha | date:'hh:mm a' }}</p>
-          </div>
-
-          <p><strong>Mano de Obra / Servicio:</strong></p>
-          <p class="service-desc">{{ h.descripcion_servicio }}</p>
-
-          <!-- Si el servicio incluyó repuestos de la bodega -->
-          <div class="repuestos-taller" *ngIf="h.repuestos_utilizados?.length > 0">
-            <p><strong>Partes Instaladas:</strong></p>
-            <div class="moto" *ngFor="let repuesto of h.repuestos_utilizados">
-              {{ repuesto.cantidad }}x {{ repuesto.elemento | uppercase }}
-            </div>
-          </div>
-
-          <div class="price">
-            Total: {{ h.total_servicio | currency:'':'symbol':'1.0-0' }}
-          </div>
-
-        </div>
-
-      </div>
-
+    <div class="fb-loading" *ngIf="buscando">
+      <ion-spinner name="crescent"></ion-spinner>
     </div>
 
-  </div>
+    <ng-container *ngIf="!buscando && buscado">
 
+      <div class="stats" *ngIf="historiales.length">
+        <div class="fb-card stat">
+          <span>Visitas</span>
+          <strong class="fb-money">{{ historiales.length }}</strong>
+        </div>
+        <div class="fb-card stat">
+          <span>Última</span>
+          <strong class="fb-money">{{ historiales[0].fecha | date:'d MMM' }}</strong>
+        </div>
+        <div class="fb-card stat">
+          <span>Gastado</span>
+          <strong class="fb-money">$ {{ totalGastado | number:'1.0-0' }}</strong>
+        </div>
+      </div>
+
+      <ol class="timeline" *ngIf="historiales.length">
+        <li *ngFor="let h of historiales; let first = first">
+          <span class="dot" [class.first]="first" aria-hidden="true"></span>
+          <article class="visit">
+            <div class="visit-top">
+              <span class="date">{{ h.fecha | date:'d MMM y · h:mm a' }}</span>
+              <strong class="fb-money">$ {{ h.total_servicio | number:'1.0-0' }}</strong>
+            </div>
+            <p class="work">{{ h.descripcion_servicio }}</p>
+            <ul class="parts" *ngIf="h.repuestos_utilizados?.length">
+              <li *ngFor="let r of h.repuestos_utilizados">
+                {{ r.elemento }} <span>×{{ r.cantidad }}</span>
+              </li>
+            </ul>
+            <span class="fb-pill accent" *ngIf="!esMostrador(h)">
+              <ion-icon name="construct-outline" aria-hidden="true"></ion-icon>
+              Incluyó mano de obra
+            </span>
+          </article>
+        </li>
+      </ol>
+
+      <div class="fb-empty" *ngIf="!historiales.length">
+        <ion-icon name="bicycle-outline"></ion-icon>
+        <strong>Sin visitas para {{ placaMostrada }}</strong>
+        <span>Las visitas se registran al escribir la placa en la orden de taller al vender.</span>
+      </div>
+    </ng-container>
+
+    <div class="fb-empty" *ngIf="!buscando && !buscado">
+      <ion-icon name="bicycle-outline"></ion-icon>
+      <strong>Escribe una placa</strong>
+      <span>Verás cada servicio, los repuestos instalados y cuánto se cobró.</span>
+    </div>
+  </div>
 </ion-content>

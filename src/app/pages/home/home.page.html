@@ -1,169 +1,144 @@
-<ion-content fullscreen>
-<div class="main">
+<ion-content>
+  <div class="fb-page">
 
-  <div class="topbar">
-    <ion-menu-button></ion-menu-button>
+    <header class="fb-header">
+      <div>
+        <span class="fb-sub fecha-hoy">{{ hoyTexto }}</span>
+        <h1 class="fb-title">Resumen</h1>
+      </div>
+      <button type="button" class="fb-avatar" (click)="go('/mas')" aria-label="Perfil y más opciones">
+        <img *ngIf="auth.avatarUrl; else inicial" [src]="auth.avatarUrl" alt="">
+        <ng-template #inicial>{{ auth.inicial }}</ng-template>
+      </button>
+    </header>
 
-    <div class="switch-container">
-      <ion-icon class="switch-icon" name="sunny-outline"></ion-icon>
-      <label class="switch">
-        <input
-          type="checkbox"
-          [checked]="isDark"
-          (change)="themeService.toggleDark()">
-        <span class="slider"></span>
-      </label>
-      <ion-icon class="switch-icon" name="moon-outline"></ion-icon>
+    <!-- Periodo -->
+    <div class="periodo">
+      <div class="fb-seg" role="group" aria-label="Periodo">
+        <button type="button" [class.on]="preset === 'hoy'" [attr.aria-pressed]="preset === 'hoy'" (click)="setHoy()">Hoy</button>
+        <button type="button" [class.on]="preset === 'semana'" [attr.aria-pressed]="preset === 'semana'" (click)="setSemana()">7 días</button>
+        <button type="button" [class.on]="preset === 'mes'" [attr.aria-pressed]="preset === 'mes'" (click)="setMes()">Mes</button>
+      </div>
+      <button
+        type="button"
+        class="fb-icon-btn"
+        [class.accent]="preset === 'rango'"
+        (click)="toggleCalendar()"
+        aria-label="Elegir un rango de fechas">
+        <ion-icon name="calendar-outline"></ion-icon>
+      </button>
     </div>
-  </div>
-
-  <div class="content">
 
     <div class="calendar-wrapper">
-
-      <div class="date-filter">
-
-        <p class="title">Analytics</p>
-
-        <div class="date-display" (click)="toggleCalendar()">
-
-          <ion-icon name="calendar-outline"></ion-icon>
-
-          <span>{{ fechaTexto }}</span>
-
-        </div>
-
-        <div class="calendar-popup" *ngIf="showCalendar">
-          <div #calendar></div>
-        </div>
-
-        <div class="presets">
-
-          <button (click)="setHoy()">Hoy</button>
-
-          <button (click)="setSemana()">Semana</button>
-
-          <button (click)="setMes()">Mes</button>
-
-        </div>
-
+      <div class="calendar-popup" *ngIf="showCalendar">
+        <div #calendar></div>
       </div>
-
     </div>
 
-    <div class="cards">
-
-      <div class="card">
-
-        <h3>Ventas</h3>
-
-        <p>${{ totalVentas | number }}</p>
-
-        <span
-          [class.up]="crecimientoVentas > 0"
-          [class.down]="crecimientoVentas < 0">
-
-          {{ crecimientoVentas | number:'1.0-2' }}%
-
+    <!-- Tarjeta principal -->
+    <section class="hero" aria-live="polite">
+      <div class="hero-top">
+        <span class="hero-label">{{ tituloPeriodo }}</span>
+        <span class="growth" *ngIf="crecimientoVentas !== 0" [class.down]="crecimientoVentas < 0">
+          <ion-icon [name]="crecimientoVentas > 0 ? 'arrow-up' : 'arrow-down'" aria-hidden="true"></ion-icon>
+          {{ crecimientoVentas > 0 ? crecimientoVentas : -crecimientoVentas }} % vs. periodo anterior
         </span>
-
       </div>
 
-      <div class="card">
+      <div class="hero-amount fb-money">$ {{ totalVentas | number:'1.0-0' }}</div>
+      <div class="hero-range">{{ fechaTexto }}</div>
 
-        <h3>Ganancia</h3>
-
-        <p>${{ totalGanancia | number }}</p>
-
+      <div class="hero-stats">
+        <div>
+          <span>Ganancia</span>
+          <strong class="fb-money">$ {{ totalGanancia | number:'1.0-0' }}</strong>
+        </div>
+        <div>
+          <span>Facturas</span>
+          <strong class="fb-money">{{ numFacturas }}</strong>
+        </div>
+        <div>
+          <span>Ticket prom.</span>
+          <strong class="fb-money">$ {{ ticketPromedio | number:'1.0-0' }}</strong>
+        </div>
       </div>
+    </section>
 
-      <div class="card">
+    <div class="grid">
 
-        <h3>Transacciones</h3>
+      <section class="fb-card chart-card">
+        <div class="card-head">
+          <h2>Ventas por día</h2>
+          <span>{{ fechaTexto }}</span>
+        </div>
+        <div class="chart-box">
+          <canvas #ventasChart aria-label="Gráfica de ventas por día" role="img"></canvas>
+          <p class="sin-datos" *ngIf="!cargando && !ventas.length">Sin ventas en este periodo</p>
+        </div>
+      </section>
 
-        <p>{{ ventas.length }}</p>
+      <section class="fb-card chart-card">
+        <div class="card-head">
+          <h2>Ganancia por día</h2>
+          <span>Margen {{ margen }} %</span>
+        </div>
+        <div class="chart-box">
+          <canvas #gananciaChart aria-label="Gráfica de ganancia por día" role="img"></canvas>
+          <p class="sin-datos" *ngIf="!cargando && !ventas.length">Sin ventas en este periodo</p>
+        </div>
+      </section>
 
-      </div>
+      <section class="fb-card donut-card">
+        <div class="card-head">
+          <h2>Distribución</h2>
+        </div>
+        <div class="donut">
+          <div class="donut-box">
+            <canvas #donutChart aria-label="Ganancia frente a costo" role="img"></canvas>
+            <div class="donut-center">
+              <strong class="fb-money">{{ margen }} %</strong>
+              <span>margen</span>
+            </div>
+          </div>
+          <ul class="legend">
+            <li>
+              <i class="dot accent" aria-hidden="true"></i>
+              <span>Ganancia</span>
+              <strong>$ {{ totalGanancia | number:'1.0-0' }}</strong>
+            </li>
+            <li>
+              <i class="dot neutral" aria-hidden="true"></i>
+              <span>Costo</span>
+              <strong>$ {{ costoTotal | number:'1.0-0' }}</strong>
+            </li>
+          </ul>
+        </div>
+      </section>
 
-      <div class="card">
+      <section class="fb-card top-card">
+        <div class="card-head">
+          <h2>Más vendidos</h2>
+          <button type="button" class="fb-link" (click)="go('/historial-ventas')">Ver ventas</button>
+        </div>
 
-        <h3>Promedio venta</h3>
+        <ol class="top" *ngIf="topProductos.length; else sinTop">
+          <li *ngFor="let p of topProductos; let i = index">
+            <div class="top-row">
+              <span class="rank fb-money" [class.first]="i === 0">{{ i + 1 }}</span>
+              <span class="name">{{ p.nombre }}</span>
+              <span class="qty">{{ p.cantidad }} u.</span>
+            </div>
+            <div class="bar" aria-hidden="true">
+              <div [style.width.%]="p.ancho" [class.first]="i === 0"></div>
+            </div>
+          </li>
+        </ol>
 
-        <p>
-          {{ ventas.length ? (totalVentas / ventas.length) : 0 | number }}
-        </p>
-
-      </div>
-
-      <div class="card">
-
-        <h3>Distribución</h3>
-
-        <canvas #donutChart></canvas>
-
-      </div>
-
-      <div class="card">
-
-        <h3>Top productos vendidos</h3>
-
-        <table>
-
-          <thead>
-
-            <tr>
-
-              <th>PRODUCTO</th>
-
-              <th>CANTIDAD</th>
-
-              <th>%</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            <tr *ngFor="let p of topProductos">
-
-              <td>{{ p.nombre | uppercase }}</td>
-
-              <td>{{ p.cantidad }}</td>
-
-              <td>{{ p.porcentaje | number:'1.0-0' }}%</td>
-
-            </tr>
-
-          </tbody>
-
-        </table>
-
-      </div>
+        <ng-template #sinTop>
+          <p class="sin-datos static">Todavía no hay productos vendidos en este periodo.</p>
+        </ng-template>
+      </section>
 
     </div>
-
-    <div class="charts">
-
-      <div class="chart">
-
-        <h3>Ventas mensuales</h3>
-
-        <canvas #ventasChart></canvas>
-
-      </div>
-
-      <div class="chart">
-
-        <h3>Ganancia neta</h3>
-
-        <canvas #gananciaChart></canvas>
-
-      </div>
-
-    </div>
-
   </div>
-
-</div>
 </ion-content>

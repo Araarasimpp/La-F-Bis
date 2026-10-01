@@ -1,22 +1,26 @@
 import { Component } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { IonContent, IonIcon, IonSpinner } from '@ionic/angular/standalone';
+
 import { SupabaseService } from '../../services/supabase.service';
-import { IONIC_IMPORTS } from 'src/app/shared/ionic-imports';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [IonicModule, FormsModule, ...IONIC_IMPORTS],
+  imports: [CommonModule, FormsModule, IonContent, IonIcon, IonSpinner],
   templateUrl: './register.page.html',
-  styleUrls: ['./register.page.scss']
+  styleUrls: ['../login/login.page.scss']
 })
 export class RegisterPage {
 
   email = '';
   password = '';
   loading = false;
+  verClave = false;
+  error = '';
+  listo = false;
 
   constructor(
     private supabase: SupabaseService,
@@ -24,19 +28,29 @@ export class RegisterPage {
   ) {}
 
   async register() {
-    this.loading = true;
+    if (this.loading) return;
 
-    const { error } = await this.supabase.register(this.email, this.password);
+    this.error = '';
 
-    if (error) {
-      alert('Error: ' + error.message);
-    } else {
-      alert('Usuario creado correctamente 🎉');
-      this.router.navigateByUrl('/');
+    if (!this.email.trim() || this.password.length < 6) {
+      this.error = 'Escribe un correo válido y una contraseña de al menos 6 caracteres.';
+      return;
     }
 
+    this.loading = true;
+
+    const { error } = await this.supabase.register(this.email.trim(), this.password);
+
     this.loading = false;
+
+    if (error) {
+      this.error = error.message;
+      return;
+    }
+
+    this.listo = true;
   }
+
   goLogin() {
     this.router.navigateByUrl('/');
   }

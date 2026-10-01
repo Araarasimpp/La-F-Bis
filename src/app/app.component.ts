@@ -1,46 +1,84 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonApp, IonMenu, IonRouterOutlet } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  addOutline,
+  alertCircleOutline,
+  arrowDown,
+  arrowUp,
+  barcodeOutline,
+  bicycleOutline,
+  calendarOutline,
+  cameraOutline,
+  cartOutline,
+  cashOutline,
+  checkmarkOutline,
+  chevronForwardOutline,
+  closeOutline,
+  cloudUploadOutline,
+  constructOutline,
+  createOutline,
+  cubeOutline,
+  eyeOffOutline,
+  eyeOutline,
+  gridOutline,
+  homeOutline,
+  imageOutline,
+  imagesOutline,
+  locationOutline,
+  logOutOutline,
+  moonOutline,
+  peopleOutline,
+  personOutline,
+  pricetagOutline,
+  printOutline,
+  receiptOutline,
+  removeOutline,
+  scanOutline,
+  searchOutline,
+  settingsOutline,
+  swapHorizontalOutline,
+  timeOutline,
+  trashOutline
+} from 'ionicons/icons';
+
 import { SupabaseService } from './services/supabase.service';
 import { AuthService } from './services/auth.service';
-import { ThemeService } from './services/theme'; // 🔥 Importamos tu ThemeService
-
-import { AppMenuComponent } from './components/app-menu/app-menu.component';
+import { ThemeService } from './services/theme';
+import { TabBarComponent } from './components/tab-bar/tab-bar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    IonApp,
-    IonMenu,
-    IonRouterOutlet,
-    AppMenuComponent
-  ],
+  imports: [IonApp, IonRouterOutlet, TabBarComponent],
   templateUrl: 'app.component.html',
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
   constructor(
     private router: Router,
     private supabase: SupabaseService,
     private authService: AuthService,
-    private themeService: ThemeService // 🔥 Inyectamos el servicio de tema
+    private themeService: ThemeService
   ) {
+    // Todos los íconos de la app se registran una sola vez aquí
+    addIcons({
+      addOutline, alertCircleOutline, arrowDown, arrowUp, barcodeOutline, bicycleOutline,
+      calendarOutline, cameraOutline, cartOutline, cashOutline, checkmarkOutline,
+      chevronForwardOutline, closeOutline, cloudUploadOutline, constructOutline, createOutline,
+      cubeOutline, eyeOffOutline, eyeOutline, gridOutline, homeOutline, imageOutline,
+      imagesOutline, locationOutline, logOutOutline, moonOutline, peopleOutline, personOutline,
+      pricetagOutline, printOutline, receiptOutline, removeOutline, scanOutline, searchOutline,
+      settingsOutline, swapHorizontalOutline, timeOutline, trashOutline
+    });
+
     this.init();
   }
 
-  ngOnInit(): void {
-    // 🧹 Limpiamos el viejo código síncrono de localStorage que había aquí
-  }
-
   async init(): Promise<void> {
-    // 1. 🔥 Inicializar el tema de forma nativa/asíncrona en el móvil
     await this.themeService.initTheme();
-
-    // 2. 🔥 Cargar los datos del perfil del usuario (desde Supabase con Capacitor Preferences)
     await this.authService.loadUser();
-
-    // 3. 🔄 Ejecutar el validador de rutas y sesión activa
     await this.checkSession();
   }
 
@@ -48,40 +86,41 @@ export class AppComponent implements OnInit {
     const { data } = await this.supabase.getSession();
     const currentUrl = this.router.url;
 
-    // 1. Enrutamiento inicial limpio
     if (data.session) {
       if (currentUrl === '/' || currentUrl === '') {
-        this.router.navigateByUrl('/home');
+        this.router.navigateByUrl(this.inicioPorRol(), { replaceUrl: true });
       }
-    } else {
-      if (currentUrl !== '/') {
-        this.router.navigateByUrl('/');
-      }
+    } else if (currentUrl !== '/' && currentUrl !== '/register') {
+      this.router.navigateByUrl('/');
     }
 
-    // 2. 🛡️ Listener optimizado para evitar duplicación de pantallas en móviles
     this.supabase.supabase.auth.onAuthStateChange((event, session) => {
       const urlActual = this.router.url;
 
-      // Si el usuario explícitamente inicia sesión y está atrapado en el login, va a home
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         if (session && (urlActual === '/' || urlActual === '')) {
-          this.router.navigateByUrl('/home');
+          this.authService.loadUser().then(() =>
+            this.router.navigateByUrl(this.inicioPorRol(), { replaceUrl: true })
+          );
         }
       }
 
-      // 🔥 EL ESCUDO: Solo mandamos al login si el evento es explícitamente un cierre de sesión
-      // Ignoramos eventos temporales como 'TOKEN_REFRESHED' que bugean la UI del celular
-      if (event === 'SIGNED_OUT') {
-        if (urlActual !== '/') {
-          // Limpiamos estados de la app para evitar fugas de memoria
-          this.authService.profile = null;
-          this.authService.rol = '';
-          
-          // Redirección limpia
-          this.router.navigateByUrl('/');
-        }
+      // Solo se vuelve al login con un cierre de sesión explícito
+      // (se ignoran eventos como TOKEN_REFRESHED, que en el celular causaban saltos)
+      if (event === 'SIGNED_OUT' && urlActual !== '/') {
+        this.authService.profile = null;
+        this.authService.rol = '';
+        this.router.navigateByUrl('/', { replaceUrl: true });
       }
     });
+  }
+
+  /** Pantalla de entrada según el rol (vendedor → vender, inventario → inventario) */
+  private inicioPorRol(): string {
+    switch (this.authService.rol) {
+      case 'vendedor': return '/ventas';
+      case 'inventario': return '/inventory';
+      default: return '/home';
+    }
   }
 }

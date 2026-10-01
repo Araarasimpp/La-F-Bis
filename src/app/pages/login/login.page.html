@@ -1,29 +1,62 @@
+<ion-content>
+  <main class="auth">
 
-<div class="container">
- <div class="ring">
-    <i style="--clr: #00ff0a"></i>
-    <i style="--clr: #ff0057"></i>
-    <i style="--clr: #f7f309"></i>
-      <div class="login">
-        <h2>Login</h2>
-        <div class="inputbox">
-          <ion-input placeholder="Correo" [(ngModel)]="email"></ion-input>
-        </div>
-        <div class="inputbox">
-          <ion-input type="password" placeholder="Contraseña" [(ngModel)]="password"></ion-input>
-        </div>
-        <div class="inputbox">
-          <ion-button expand="block" class="btn-gradient" (click)="login()">
-            Iniciar Sesión
-          </ion-button>   
-        </div>
-        <div class="links">
-          <p class="link" (click)="goRegister()">
-            ¿No tienes cuenta? Regístrate
-          </p>
+    <div class="stripe" aria-hidden="true"></div>
+
+    <section class="brand">
+      <span class="fb-eyebrow">Repuestos · Taller</span>
+      <h1>La F<br>Bis</h1>
+      <p>Inventario, ventas y órdenes de taller en un solo lugar.</p>
+    </section>
+
+    <form class="form" (ngSubmit)="login()" novalidate>
+
+      <label class="fb-field">
+        <span>Correo</span>
+        <input
+          type="email"
+          name="email"
+          autocomplete="email"
+          inputmode="email"
+          placeholder="tu@correo.com"
+          [(ngModel)]="email">
+      </label>
+
+      <div class="fb-field">
+        <label class="fb-label" for="clave">Contraseña</label>
+        <div class="password">
+          <input
+            id="clave"
+            name="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            [type]="verClave ? 'text' : 'password'"
+            [(ngModel)]="password">
+          <button
+            type="button"
+            class="fb-icon-btn plain sm"
+            (click)="verClave = !verClave"
+            [attr.aria-label]="verClave ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <ion-icon [name]="verClave ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
         </div>
       </div>
-  </div>
-</div> 
 
+      <p class="error" *ngIf="error" role="alert">
+        <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+        {{ error }}
+      </p>
 
+      <button type="submit" class="fb-btn primary big block" [disabled]="loading">
+        <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+        <span>{{ loading ? 'Ingresando…' : 'Ingresar' }}</span>
+      </button>
+
+      <p class="alt">
+        ¿No tienes cuenta?
+        <button type="button" class="fb-link" (click)="goRegister()">Crear cuenta</button>
+      </p>
+    </form>
+
+  </main>
+</ion-content>

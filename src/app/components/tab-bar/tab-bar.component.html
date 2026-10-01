@@ -1,0 +1,35 @@
+<nav class="tabbar" *ngIf="visible" aria-label="Navegación principal">
+
+  <a
+    *ngFor="let t of izquierda"
+    class="tab"
+    [routerLink]="t.url"
+    [class.active]="activo(t)"
+    [attr.aria-current]="activo(t) ? 'page' : null">
+    <ion-icon [name]="t.icon" aria-hidden="true"></ion-icon>
+    <span>{{ t.label }}</span>
+  </a>
+
+  <button
+    *ngIf="puedeVender"
+    type="button"
+    class="sell"
+    [class.active]="enVenta"
+    (click)="vender()"
+    [attr.aria-label]="enVenta ? 'Ver carrito, ' + count + ' artículos' : 'Vender'">
+    <ion-icon name="cart-outline" aria-hidden="true"></ion-icon>
+    <span class="badge" *ngIf="count > 0">{{ count }}</span>
+    <span class="sell-label">Vender</span>
+  </button>
+
+  <a
+    *ngFor="let t of derecha"
+    class="tab"
+    [routerLink]="t.url"
+    [class.active]="activo(t)"
+    [attr.aria-current]="activo(t) ? 'page' : null">
+    <ion-icon [name]="t.icon" aria-hidden="true"></ion-icon>
+    <span>{{ t.label }}</span>
+  </a>
+
+</nav>

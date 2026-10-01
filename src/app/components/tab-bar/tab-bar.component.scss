@@ -1,0 +1,122 @@
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  height: calc(var(--fb-tabbar-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  background: var(--fb-bar);
+  border-top: 1px solid var(--fb-line);
+}
+
+.tab {
+  flex: 1;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--fb-muted);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  &.active {
+    color: var(--fb-accent-text);
+  }
+}
+
+.sell {
+  position: relative;
+  flex: 0 0 auto;
+  align-self: flex-start;
+  width: 60px;
+  height: 60px;
+  margin: -22px 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 20px;
+  background: var(--fb-accent);
+  color: var(--fb-accent-ink);
+  box-shadow: 0 0 0 6px var(--fb-bg);
+
+  ion-icon {
+    font-size: 28px;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.sell-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--fb-text);
+  color: var(--fb-bg);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Escritorio y tabletas grandes: riel vertical a la izquierda */
+@media (min-width: 992px) {
+  .tabbar {
+    top: 0;
+    right: auto;
+    width: var(--fb-rail-w);
+    height: auto;
+    padding: calc(env(safe-area-inset-top) + 24px) 0 24px;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+    border-top: 0;
+    border-right: 1px solid var(--fb-line);
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    min-height: 64px;
+  }
+
+  .sell {
+    align-self: center;
+    margin: 8px 0;
+    box-shadow: none;
+  }
+
+  .sell-label {
+    position: static;
+    width: auto;
+    height: auto;
+    clip: auto;
+    display: none;
+  }
+}

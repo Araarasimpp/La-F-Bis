@@ -1,41 +1,34 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Preferences } from '@capacitor/preferences'; // 🔥 Importamos Preferencias Nativas
+import { Preferences } from '@capacitor/preferences';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeService {
 
-  private darkMode = new BehaviorSubject<boolean>(false);
+  // El rediseño está pensado primero para modo oscuro
+  private darkMode = new BehaviorSubject<boolean>(true);
   isDark$ = this.darkMode.asObservable();
 
   constructor() {
     this.initTheme();
   }
 
-  // 🔥 INICIALIZA EL TEMA (Modificado a Asíncrono)
   async initTheme() {
     const { value } = await Preferences.get({ key: 'darkMode' });
 
-    const isDark = value === 'true';
+    // Sin preferencia guardada → oscuro
+    const isDark = value === null ? true : value === 'true';
 
     this.darkMode.next(isDark);
     this.applyTheme(isDark);
   }
 
-  // 🔁 TOGGLE
   async toggleDark() {
-    const current = this.darkMode.value;
-    const newValue = !current;
-
-    this.darkMode.next(newValue);
-    this.applyTheme(newValue);
-
-    await Preferences.set({ key: 'darkMode', value: newValue ? 'true' : 'false' });
+    await this.setDark(!this.darkMode.value);
   }
 
-  // 🎯 SET DIRECTO
   async setDark(value: boolean) {
     this.darkMode.next(value);
     this.applyTheme(value);
@@ -43,12 +36,12 @@ export class ThemeService {
     await Preferences.set({ key: 'darkMode', value: value ? 'true' : 'false' });
   }
 
-  // 🎨 APLICA AL DOM
   private applyTheme(isDark: boolean) {
-    if (isDark) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
+    document.body.classList.toggle('dark', isDark);
+    // Paleta oscura de los componentes de Ionic (alertas, modales, spinners)
+    document.documentElement.classList.toggle('ion-palette-dark', isDark);
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    meta?.setAttribute('content', isDark ? '#111214' : '#F3F1EB');
   }
 }

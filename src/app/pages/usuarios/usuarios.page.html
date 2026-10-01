@@ -1,92 +1,73 @@
 <ion-content>
-  <div class="layout">
-    
-    <div class="main">
+  <div class="fb-page">
 
-      <div class="topbar">
-        <ion-menu-button></ion-menu-button>
+    <header class="fb-header">
+      <div>
+        <h1 class="fb-title">Usuarios</h1>
+        <span class="fb-sub">{{ usuarios.length }} cuentas · el rol define qué puede ver cada uno</span>
       </div>
+    </header>
 
-      <div class="bar">
-        <div class="titulo-seccion">
-          <h1>Usuarios</h1>
-          <p>Administración del sistema</p>
-        </div>
+    <label class="fb-search">
+      <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+      <span class="fb-sr">Buscar usuario</span>
+      <input type="search" placeholder="Buscar por nombre de usuario" [(ngModel)]="busqueda">
+    </label>
 
-        <div class="group-busqueda">
-          <ion-icon class="icon" name="search-outline"></ion-icon>
-          <input
-            type="text"
-            class="filtrar"
-            placeholder="Buscar usuario..."
-            [(ngModel)]="busqueda">
-        </div>    
-      </div>
-
-      <div *ngIf="cargando" class="loading">
-        <ion-spinner name="crescent" color="primary"></ion-spinner>
-      </div>
-
-      <div class="users-grid">
-
-        <div class="user-card" *ngFor="let u of usuariosFiltrados">
-
-          <div class="card-top">
-            <div class="avatar-wrapper">
-              <img
-                *ngIf="u.avatar_url"
-                [src]="u.avatar_url"
-                class="avatar">
-
-              <div
-                *ngIf="!u.avatar_url"
-                class="avatar empty">
-                {{ u.username?.charAt(0)?.toUpperCase() || '?' }}
-              </div>
-            </div>
-
-            <div class="user-info">
-              <h2>{{ u.username || 'Sin nombre' }}</h2>
-              <p class="user-id">ID: {{ u.id }}</p>
-            </div>
-          </div>
-
-          <div class="status-row">
-            <div
-              class="badge"
-              [class.active]="u.activo"
-              [class.inactive]="!u.activo">
-              {{ u.activo ? 'Activo' : 'Suspendido' }}
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Rol del usuario</label>
-            <div class="select-wrapper">
-              <select [(ngModel)]="u.rol" (change)="cambiarRol(u)">
-                <option value="administrador">Administrador</option>
-                <option value="vendedor">Vendedor</option>
-                <option value="inventario">Inventario</option>
-                <option value="supervisor">Supervisor</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="created">
-            <span>Creado:</span> {{ u.created_at | date:'shortDate' }}
-          </div>
-
-          <button
-            class="toggle-btn"
-            [class.disabled]="!u.activo"
-            (click)="toggleActivo(u)">
-            {{ u.activo ? 'Suspender Usuario' : 'Activar Usuario' }}
-          </button>
-
-        </div>
-
-      </div>
-
+    <div class="fb-loading" *ngIf="cargando">
+      <ion-spinner name="crescent"></ion-spinner>
     </div>
+
+    <div class="list" *ngIf="!cargando">
+      <article class="fb-card user" *ngFor="let u of usuariosFiltrados" [class.off]="!u.activo">
+
+        <div class="user-top">
+          <span class="fb-avatar">
+            <img *ngIf="u.avatar_url; else ini" [src]="u.avatar_url" alt="">
+            <ng-template #ini>{{ u.username?.charAt(0)?.toUpperCase() || '?' }}</ng-template>
+          </span>
+          <div class="user-info">
+            <h2>
+              {{ u.username || 'Sin nombre' }}
+              <span class="tu" *ngIf="u.id === auth.profile?.id">(tú)</span>
+            </h2>
+            <span class="since">Desde {{ u.created_at | date:'d MMM y' }}</span>
+          </div>
+          <span class="fb-pill" [class.ok]="u.activo" [class.warn]="!u.activo">
+            {{ u.activo ? 'Activo' : 'Suspendido' }}
+          </span>
+        </div>
+
+        <label class="fb-field">
+          <span>Rol</span>
+          <select [(ngModel)]="u.rol" (change)="cambiarRol(u)">
+            <option value="administrador">Administrador · todo</option>
+            <option value="supervisor">Supervisor · resumen, ventas y motos</option>
+            <option value="vendedor">Vendedor · solo vender</option>
+            <option value="inventario">Inventario · productos y categorías</option>
+          </select>
+        </label>
+
+        <button
+          type="button"
+          class="fb-btn block"
+          [class.danger]="u.activo"
+          [class.ghost]="!u.activo"
+          [disabled]="u.id === auth.profile?.id"
+          (click)="toggleActivo(u)">
+          <ion-icon [name]="u.activo ? 'close-outline' : 'checkmark-outline'" aria-hidden="true"></ion-icon>
+          {{ u.activo ? 'Suspender acceso' : 'Reactivar acceso' }}
+        </button>
+      </article>
+
+      <div class="fb-empty" *ngIf="!usuariosFiltrados.length">
+        <ion-icon name="people-outline"></ion-icon>
+        <strong>Sin usuarios con ese nombre</strong>
+      </div>
+    </div>
+
+    <p class="nota">
+      Las cuentas nuevas se crean desde la pantalla de registro y entran como vendedor.
+    </p>
   </div>
 </ion-content>

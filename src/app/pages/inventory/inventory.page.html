@@ -1,235 +1,274 @@
 <ion-content>
+  <div class="fb-page">
 
-  <div class="layout">
-
-    <!-- MAIN -->
-    <div class="main">
-
-      <div class="topbar">
-
-        <ion-menu-button></ion-menu-button>
-
+    <header class="fb-header">
+      <div>
+        <h1 class="fb-title">Inventario</h1>
+        <span class="fb-sub">
+          {{ productos.length }} referencias
+          <ng-container *ngIf="totalStockBajo"> · <span class="warn-text">{{ totalStockBajo }} con stock bajo</span></ng-container>
+        </span>
       </div>
+      <button type="button" class="fb-btn outline" (click)="abrirModal()">
+        <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+        Nuevo
+      </button>
+    </header>
 
-      <div class="toolbar">
-        <!-- 🔍 BUSCADOR + ESCÁNER -->
-        <div class="group">
-            <ion-icon class="icon" name="search-outline"></ion-icon>
-            <input 
-              
-              class="filtrar"
-              type="text"
-              placeholder="Buscar producto..."
-              [(ngModel)]="busqueda"
-              (input)="filtrar()"
-
-            />
-          </div>
-          <!-- ➕ BOTÓN -->
-          <button class="fab" (click)="abrirModal()">+</button>
-          <button class="scan-btn" (click)="escanearCodigo()">
-            Escanear
-          </button>
-      </div>
-      <!-- 🛒 GRID -->
-      <div class="grid">
-
-        <div class="card" *ngFor="let p of productosFiltrados">
-
-          <img
-            *ngIf="p.imagen_url; else noImg"
-            [src]="p.imagen_url"
-          />
-
-          <ng-template #noImg>
-            <div class="no-image">Sin imagen</div>
-          </ng-template>
-
-          <h3>{{ p.elemento | uppercase }}</h3>
-          <p>{{ p.marca }}</p>
-          <p>Numero Inv: {{ p.numero_inventario }}</p>
-          <!-- 📍 Agrega esto dentro de tu tarjeta, usando 'p' en lugar de 'item' -->
-          <div class="moto" *ngIf="p.ubicacion" style="background: #e2fcd4; color: #257007; margin-top: 8px;">
-            📍 BODEGA: {{ p.ubicacion | uppercase }}
-          </div>
-
-          <div class="price">
-            {{ p.precio | currency:'':'symbol':'1.0-0' }}
-          </div>
-
-          <div class="stock" [class.low]="p.stock < 5">
-            Stock: {{ p.stock }}
-          </div>
-
-          <div class="moto">
-            {{ p.moto | uppercase}}
-          </div>
-
-          <div class="actions">
-            <button (click)="abrirModal(p)">Editar</button>
-            <button class="danger" (click)="eliminar(p.id)">Eliminar</button>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- 🧾 MODAL -->
-      <div class="modal" *ngIf="showModal">
-
-        <div class="modal-content">
-
-          <h2>{{ editando ? 'Editar producto' : 'Nuevo producto' }}</h2>
-
-          <div class="input-group">
-              <label>N° Inventario</label>
-              <input [(ngModel)]="form.numero_inventario">
-            </div>
-
-            <div class="input-group">
-              <label>Código de barras</label>
-              <input [(ngModel)]="form.codigo_barras">
-            </div>
-
-            <div class="input-group">
-              <label>Código interno</label>
-              <input [(ngModel)]="form.codigo">
-            </div>
-
-            <div class="input-group">
-              <label>Producto</label>
-              <input [(ngModel)]="form.elemento">
-            </div>
-
-            <div class="input-group">
-              <label>Ubicación (Bodega / Estante)</label>
-              <input 
-                type="text" 
-                placeholder="Ej: Pasillo A - Estante 2" 
-                [(ngModel)]="form.ubicacion"
-              />
-            </div>
-
-            <div class="input-group">
-              <label>Marca</label>
-              <input [(ngModel)]="form.marca">
-            </div>
-
-            <div class="input-group">
-              <label>Proveedor</label>
-              <input [(ngModel)]="form.proveedor">
-            </div>
-
-            <div class="input-group">
-              <label>Moto</label>
-              <input [(ngModel)]="form.moto">
-            </div>
-
-            <div class="input-group">
-              <label>Costo</label>
-              <input
-                type="text"
-                placeholder="Costo"
-                [value]="formatearNumero(form.costo)"
-                (input)="form.costo = parseNumero($event.target.value); calcularPrecio()"
-              />
-            </div>
-
-            <div class="input-group">
-              <label>% Ganancia</label>
-              <input type="number" [(ngModel)]="form.porcentaje_ganancia" (input)="calcularPrecio()">
-            </div>
-
-            <div class="input-group">
-              <label>Precio</label>
-              <input
-                type="text"
-                placeholder="Precio"
-                [value]="formatearNumero(form.precio)"
-                (input)="form.precio = parseNumero($event.target.value)"
-              />
-            </div>
-
-            <div class="input-group">
-              <label>Stock</label>
-              <input type="number" [(ngModel)]="form.stock">
-            </div>
-
-            <div class="input-group categoria-combo">
-              <label>Categoría</label>
-
-              <div class="combo-wrapper">
-                
-
-                <input
-                  type="text"
-                  placeholder="Buscar categoría..."
-                  [(ngModel)]="categoriaBusqueda"
-                  (input)="filtrarCategoriasBusqueda()"
-                  (focus)="abrirDropdownCategorias()"
-                  (blur)="cerrarDropdownCategorias()"
-                />
-
-                <div class="combo-dropdown" *ngIf="mostrarDropdownCategorias">
-
-                  <div
-                    class="combo-option combo-clear"
-                    *ngIf="form.categoria_id"
-                    (mousedown)="quitarCategoria()">
-                    ✖ Quitar categoría
-                  </div>
-
-                  <div
-                    class="combo-option"
-                    *ngFor="let cat of categoriasBusquedaResultados"
-                    (mousedown)="seleccionarCategoria(cat)">
-                    {{ cat.nombre }}
-                  </div>
-
-                  <div class="combo-empty" *ngIf="categoriasBusquedaResultados.length === 0">
-                    Sin resultados
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-          <!-- 📷 IMAGEN -->
-          <div class="image-buttons">
-
-            <button type="button" (click)="tomarFoto()">
-              Tomar foto
-            </button>
-
-            <button type="button" (click)="elegirGaleria()">
-              Galería
-            </button>
-
-          </div>
-
-          <input
-            hidden
-            type="file"
-            #fileInput
-            (change)="onFileSelected($event)"
-          >
-
-          <div class="image-preview" *ngIf="previewImage">
-            <img [src]="previewImage" />
-          </div>
-
-          <!-- BOTONES -->
-          <div class="modal-actions">
-            <button (click)="guardarProducto()">Guardar</button>
-            <button (click)="cerrarModal()">Cancelar</button>
-          </div>
-
-        </div>
-
-      </div>
-
+    <div class="fb-row">
+      <label class="fb-search">
+        <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+        <span class="fb-sr">Buscar producto</span>
+        <input
+          type="search"
+          placeholder="Nombre, código, bodega o moto"
+          [(ngModel)]="busqueda"
+          (input)="filtrar()">
+      </label>
+      <button type="button" class="fb-icon-btn accent" (click)="escanearCodigo()" aria-label="Escanear código de barras">
+        <ion-icon name="scan-outline"></ion-icon>
+      </button>
     </div>
 
+    <div class="fb-chips" role="group" aria-label="Filtrar por categoría">
+      <button type="button" class="fb-chip" [class.on]="!categoriaFiltro && !soloStockBajo" (click)="setCategoria('')">Todos</button>
+      <button type="button" class="fb-chip warn" [class.on]="soloStockBajo" (click)="toggleStockBajo()">Stock bajo</button>
+      <button
+        type="button"
+        class="fb-chip"
+        *ngFor="let c of categorias"
+        [class.on]="categoriaFiltro === c.nombre"
+        (click)="setCategoria(c.nombre)">
+        {{ c.nombre }}
+      </button>
+    </div>
+
+    <div class="fb-loading" *ngIf="cargando">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <div class="list" *ngIf="!cargando">
+      <button
+        type="button"
+        class="item"
+        *ngFor="let p of productosFiltrados; trackBy: trackId"
+        (click)="abrirModal(p)"
+        [attr.aria-label]="'Editar ' + p.elemento">
+
+        <span class="fb-thumb">
+          <img *ngIf="p.imagen_url; else sinFoto" [src]="p.imagen_url" alt="" loading="lazy">
+          <ng-template #sinFoto><ion-icon name="cube-outline"></ion-icon></ng-template>
+        </span>
+
+        <span class="info">
+          <span class="name">{{ p.elemento }}</span>
+          <span class="meta fb-mono">
+            {{ p.numero_inventario || p.codigo }}<ng-container *ngIf="p.ubicacion"> · {{ p.ubicacion }}</ng-container>
+          </span>
+          <span class="meta" *ngIf="p.marca || p.moto">
+            {{ p.marca }}<ng-container *ngIf="p.marca && p.moto"> · </ng-container>{{ p.moto }}
+          </span>
+          <span class="bottom">
+            <span class="price fb-money">$ {{ p.precio | number:'1.0-0' }}</span>
+            <span class="fb-pill warn" *ngIf="p.stock < stockBajoLimite">{{ p.stock <= 0 ? 'Agotado' : 'Quedan ' + p.stock }}</span>
+            <span class="fb-pill" *ngIf="p.stock >= stockBajoLimite">Stock {{ p.stock }}</span>
+          </span>
+        </span>
+
+        <ion-icon class="chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+      </button>
+
+      <div class="fb-empty" *ngIf="!productosFiltrados.length">
+        <ion-icon name="cube-outline"></ion-icon>
+        <strong>No hay productos con ese filtro</strong>
+        <span>Cambia la búsqueda o crea un producto nuevo.</span>
+      </div>
+    </div>
   </div>
 
+  <!-- 🧾 Formulario de producto -->
+  <div class="fb-sheet-backdrop" *ngIf="showModal">
+    <section
+      class="fb-sheet full"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="editando ? 'Editar producto' : 'Nuevo producto'">
+
+      <header class="fb-sheet-head">
+        <h2 class="fb-title sm">{{ editando ? 'Editar producto' : 'Nuevo producto' }}</h2>
+        <button type="button" class="fb-icon-btn plain sm" (click)="cerrarModal()" aria-label="Cerrar">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </header>
+
+      <div class="fb-sheet-body">
+
+        <!-- Foto -->
+        <div class="photo">
+          <div class="photo-box">
+            <img *ngIf="previewImage; else sinImagen" [src]="previewImage" alt="Foto del producto">
+            <ng-template #sinImagen>
+              <ion-icon name="image-outline" aria-hidden="true"></ion-icon>
+              <span>Sin foto</span>
+            </ng-template>
+          </div>
+          <div class="photo-actions">
+            <button type="button" class="fb-btn" (click)="tomarFoto()">
+              <ion-icon name="camera-outline" aria-hidden="true"></ion-icon>
+              Tomar foto
+            </button>
+            <button type="button" class="fb-btn" (click)="elegirGaleria()">
+              <ion-icon name="images-outline" aria-hidden="true"></ion-icon>
+              Galería
+            </button>
+          </div>
+        </div>
+
+        <fieldset class="fb-section">
+          <legend>Identificación</legend>
+          <div class="fb-grid-2">
+            <label class="fb-field">
+              <span>N.º inventario</span>
+              <input class="mono" [(ngModel)]="form.numero_inventario" placeholder="Ej: 142">
+            </label>
+            <label class="fb-field">
+              <span>Código interno</span>
+              <input class="mono" [(ngModel)]="form.codigo" placeholder="Automático">
+            </label>
+          </div>
+          <div class="fb-field">
+            <label class="fb-label" for="codigo-barras">Código de barras · opcional</label>
+            <div class="fb-row">
+              <input id="codigo-barras" class="mono" [(ngModel)]="form.codigo_barras" placeholder="Escanea o escribe el código">
+              <button type="button" class="fb-icon-btn accent" (click)="escanearParaFormulario()" aria-label="Escanear código de barras">
+                <ion-icon name="scan-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fb-section">
+          <legend>Producto</legend>
+          <label class="fb-field">
+            <span>Nombre</span>
+            <input [(ngModel)]="form.elemento" placeholder="Ej: Kit de arrastre 428H">
+          </label>
+          <div class="fb-grid-2">
+            <label class="fb-field">
+              <span>Marca</span>
+              <input [(ngModel)]="form.marca">
+            </label>
+            <label class="fb-field">
+              <span>Moto</span>
+              <input [(ngModel)]="form.moto" placeholder="Ej: Pulsar 180">
+            </label>
+            <label class="fb-field">
+              <span>Proveedor</span>
+              <input [(ngModel)]="form.proveedor">
+            </label>
+
+            <div class="fb-field combo">
+              <label class="fb-label" for="categoria">Categoría</label>
+              <input
+                id="categoria"
+                type="text"
+                autocomplete="off"
+                placeholder="Buscar…"
+                role="combobox"
+                [attr.aria-expanded]="mostrarDropdownCategorias"
+                [(ngModel)]="categoriaBusqueda"
+                (input)="filtrarCategoriasBusqueda()"
+                (focus)="abrirDropdownCategorias()"
+                (blur)="cerrarDropdownCategorias()">
+
+              <div class="combo-list" *ngIf="mostrarDropdownCategorias" role="listbox">
+                <button type="button" class="combo-option clear" *ngIf="form.categoria_id" (mousedown)="quitarCategoria()">
+                  Quitar categoría
+                </button>
+                <button
+                  type="button"
+                  class="combo-option"
+                  role="option"
+                  *ngFor="let cat of categoriasBusquedaResultados"
+                  [class.on]="cat.id === form.categoria_id"
+                  (mousedown)="seleccionarCategoria(cat)">
+                  {{ cat.nombre }}
+                </button>
+                <div class="combo-empty" *ngIf="!categoriasBusquedaResultados.length">Sin resultados</div>
+              </div>
+            </div>
+          </div>
+          <label class="fb-field">
+            <span>Ubicación (bodega / estante)</span>
+            <input [(ngModel)]="form.ubicacion" placeholder="Ej: Bodega B · Estante 1">
+          </label>
+        </fieldset>
+
+        <fieldset class="fb-section">
+          <legend>Precio y existencias</legend>
+          <div class="fb-grid-2">
+            <label class="fb-field">
+              <span>Costo</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                placeholder="0"
+                [value]="formatearNumero(form.costo)"
+                (input)="form.costo = parseNumero($any($event.target).value); calcularPrecio()">
+            </label>
+            <label class="fb-field">
+              <span>% ganancia</span>
+              <input type="number" inputmode="decimal" [(ngModel)]="form.porcentaje_ganancia" (input)="calcularPrecio()">
+            </label>
+          </div>
+
+          <div class="precio">
+            <label for="precio-venta">
+              <span class="precio-label">Precio de venta</span>
+              <span class="precio-hint">Se calcula solo · puedes ajustarlo</span>
+            </label>
+            <div class="precio-input">
+              <span aria-hidden="true">$</span>
+              <input
+                id="precio-venta"
+                type="text"
+                inputmode="numeric"
+                placeholder="0"
+                [value]="formatearNumero(form.precio)"
+                (input)="form.precio = parseNumero($any($event.target).value); recalcularGanancia()">
+            </div>
+          </div>
+
+          <div class="stock">
+            <label for="stock">Stock</label>
+            <div class="fb-stepper">
+              <button type="button" (click)="cambiarStock(-1)" aria-label="Restar una unidad">
+                <ion-icon name="remove-outline"></ion-icon>
+              </button>
+              <input id="stock" class="qty" type="number" inputmode="numeric" min="0" [(ngModel)]="form.stock">
+              <button type="button" class="plus" (click)="cambiarStock(1)" aria-label="Sumar una unidad">
+                <ion-icon name="add-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <footer class="fb-sheet-foot">
+        <button
+          *ngIf="editando"
+          type="button"
+          class="fb-icon-btn"
+          (click)="eliminar(form.id)"
+          aria-label="Eliminar producto">
+          <ion-icon name="trash-outline" class="danger-icon"></ion-icon>
+        </button>
+        <button type="button" class="fb-btn ghost" (click)="cerrarModal()">Cancelar</button>
+        <button type="button" class="fb-btn primary grow" (click)="guardarProducto()" [disabled]="guardando">
+          <ion-spinner *ngIf="guardando" name="crescent"></ion-spinner>
+          {{ guardando ? 'Guardando…' : 'Guardar producto' }}
+        </button>
+      </footer>
+    </section>
+  </div>
 </ion-content>

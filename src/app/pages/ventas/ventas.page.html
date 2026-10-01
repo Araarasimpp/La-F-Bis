@@ -1,147 +1,88 @@
 <ion-content>
+  <div class="fb-page pos">
 
-  <div class="main">
-    <div class="topbar">
+    <div class="pos-main">
 
-      <ion-menu-button></ion-menu-button>
-
-    </div>
-  
-  <div class="layout">
-
-    <!-- MAIN -->
-    <div class="main ventas-container">
-
-      <!-- 🧾 IZQUIERDA → PRODUCTOS -->
-      <div class="productos">
-
-        <!-- 🔍 BUSCADOR -->
-        <div class="group">
-          <ion-icon class="icon" name="search-outline"></ion-icon>
-          <input
-            class="filtrar"
-            placeholder="Buscar producto..."
-            [(ngModel)]="busqueda">
-          
+      <header class="fb-header">
+        <div>
+          <h1 class="fb-title">Vender</h1>
+          <span class="fb-sub">Toca un producto para agregarlo o usa el lector de códigos</span>
         </div>
-        <!-- GRID PRODUCTOS -->
-        <div class="grid">
+      </header>
 
-          <div
-            class="card"
-            *ngFor="let p of productosFiltrados"
-            (click)="agregarAlCarrito(p)"
-          >
-            <img
-              *ngIf="p.imagen_url"
-              [src]="p.imagen_url"
-            />
+      <label class="fb-search">
+        <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+        <span class="fb-sr">Buscar producto</span>
+        <input
+          type="search"
+          placeholder="Nombre, código, marca o moto"
+          [(ngModel)]="busqueda">
+        <button
+          *ngIf="busqueda"
+          type="button"
+          class="fb-icon-btn plain sm"
+          (click)="busqueda = ''"
+          aria-label="Borrar búsqueda">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </label>
 
-            <div class="info">
-              <h3>{{ p.elemento | uppercase }}</h3>
-              <p>{{ p.marca }}</p>
-              <p>Numero Inv: {{ p.numero_inventario }}</p>
-              <p>{{p.moto}}</p>
-              <!-- 📍 Agrega esto dentro de tu tarjeta, usando 'p' en lugar de 'item' -->
-              <div class="moto" *ngIf="p.ubicacion" style="background: #e2fcd4; color: #257007; margin-top: 8px;">
-                📍 BODEGA: {{ p.ubicacion | uppercase }}
-              </div>
+      <span class="count">{{ productosFiltrados.length }} productos</span>
 
-              <div class="details">
-                <span class="precio">
-                  {{ p.precio | currency:'' }}
-                </span>
-
-                <span
-                  class="stock"
-                  [class.low]="p.stock <= 5"
-                >
-                  {{ p.stock }}
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
+      <div class="fb-loading" *ngIf="cargando">
+        <ion-spinner name="crescent"></ion-spinner>
       </div>
 
-      <!-- 🛒 DERECHA → CARRITO -->
-      <div class="carrito">
+      <div class="list" *ngIf="!cargando">
+        <button
+          type="button"
+          class="item"
+          *ngFor="let p of productosFiltrados; trackBy: trackId"
+          [class.agotado]="p.stock <= 0"
+          [class.en-carrito]="cantidadEnCarrito(p) > 0"
+          [disabled]="p.stock <= 0"
+          (click)="agregarAlCarrito(p)"
+          [attr.aria-label]="'Agregar ' + p.elemento + ' al carrito'">
 
-        <h2>Carrito</h2>
+          <span class="fb-thumb">
+            <img *ngIf="p.imagen_url; else sinFoto" [src]="p.imagen_url" alt="" loading="lazy">
+            <ng-template #sinFoto><ion-icon name="cube-outline"></ion-icon></ng-template>
+          </span>
 
-        <div class="items">
+          <span class="info">
+            <span class="name">{{ p.elemento }}</span>
+            <span class="meta fb-mono">
+              {{ p.numero_inventario || p.codigo }}<ng-container *ngIf="p.ubicacion"> · {{ p.ubicacion }}</ng-container>
+            </span>
+            <span class="meta" *ngIf="p.marca || p.moto">
+              {{ p.marca }}<ng-container *ngIf="p.marca && p.moto"> · </ng-container>{{ p.moto }}
+            </span>
+            <span class="bottom">
+              <span class="price fb-money">$ {{ p.precio | number:'1.0-0' }}</span>
+              <span class="fb-pill warn" *ngIf="p.stock <= 0">Agotado</span>
+              <span class="fb-pill warn" *ngIf="p.stock > 0 && p.stock < 5">Quedan {{ p.stock }}</span>
+              <span class="fb-pill" *ngIf="p.stock >= 5">Stock {{ p.stock }}</span>
+            </span>
+          </span>
 
-          <div class="item" *ngFor="let item of carrito">
-
-            <div class="info">
-              <h4>{{ item.elemento }}</h4>
-              <p>{{ item.precio | currency:'COP' }}</p>
-            </div>
-
-            <div class="controls">
-              <button (click)="disminuir(item)">−</button>
-              <span>{{ item.cantidad }}</span>
-              <button (click)="aumentar(item)">+</button>
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- TOTAL -->
-        <div class="total">
-          <h4>Total</h4>
-          <h3>{{ total | currency:'' }}</h3>
-        </div>
-
-        <div class="pago">
-                           
-
-            <select class="metodopago-select" [(ngModel)]="metodoPago">
-              <option value="efectivo">Efectivo</option>
-              <option value="transferencia">Transferencia</option>
-            </select>
-
-
-          <div *ngIf="metodoPago === 'efectivo'">
-            <input
-              class="pago-input"
-              type="number"
-              placeholder="Pago recibido"
-              [(ngModel)]="pagoRecibido"
-              (ionInput)="calcularCambio()">
-              
-
-            <p>Cambio: {{ cambio | currency:'' }}</p>
-          </div>
-
-        </div>
-
-        <!-- BOTÓN -->
-        <button class="btn-vender" (click)="vender()">
-          Finalizar venta
+          <span class="add" aria-hidden="true">
+            <span *ngIf="cantidadEnCarrito(p) > 0; else mas" class="fb-money">{{ cantidadEnCarrito(p) }}</span>
+            <ng-template #mas><ion-icon name="add-outline"></ion-icon></ng-template>
+          </span>
         </button>
 
+        <div class="fb-empty" *ngIf="!productosFiltrados.length">
+          <ion-icon name="search-outline"></ion-icon>
+          <strong>Sin resultados</strong>
+          <span>Prueba con otra palabra o con el código del producto.</span>
+        </div>
       </div>
-
     </div>
 
-    <!-- Botón flotante móvil -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="fab-carrito">
-    <ion-fab-button (click)="abrirCarrito()">
-      <ion-icon name="cart-outline"></ion-icon>
-      
-      <ion-badge color="danger" class="badge-carrito" *ngIf="carrito.length > 0">
-        {{ carrito.length }}
-      </ion-badge>
-    </ion-fab-button>
-  </ion-fab>
-
-  </div>
-
-  
+    <!-- En pantallas grandes el carrito queda fijo a la derecha -->
+    <aside class="pos-cart" aria-label="Carrito">
+      <app-carrito-modal [ventas]="this" [inline]="true"></app-carrito-modal>
+    </aside>
 
   </div>
 </ion-content>

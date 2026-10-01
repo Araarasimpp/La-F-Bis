@@ -1,0 +1,58 @@
+<ion-content>
+  <div class="fb-page narrow">
+
+    <h1 class="fb-title">Más</h1>
+
+    <section class="fb-card perfil">
+      <span class="fb-avatar lg">
+        <img *ngIf="auth.avatarUrl; else ini" [src]="auth.avatarUrl" alt="">
+        <ng-template #ini>{{ auth.inicial }}</ng-template>
+      </span>
+      <div class="perfil-text">
+        <strong>{{ auth.nombre || 'Usuario' }}</strong>
+        <span class="fb-pill accent">{{ rolTexto }}</span>
+      </div>
+    </section>
+
+    <nav class="grupo" *ngIf="gestion.length" aria-label="Gestión">
+      <h2 class="titulo">Gestión</h2>
+      <div class="fb-card lista">
+        <button type="button" class="fila" *ngFor="let a of gestion" (click)="go(a.url)">
+          <ion-icon [name]="a.icon" class="icono" aria-hidden="true"></ion-icon>
+          <span class="fila-text">
+            <strong>{{ a.label }}</strong>
+            <span>{{ a.detalle }}</span>
+          </span>
+          <ion-icon name="chevron-forward-outline" class="chev" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    </nav>
+
+    <section class="grupo" aria-label="Preferencias">
+      <h2 class="titulo">Preferencias</h2>
+      <div class="fb-card lista">
+        <label class="fila">
+          <ion-icon name="moon-outline" class="icono" aria-hidden="true"></ion-icon>
+          <span class="fila-text">
+            <strong>Modo oscuro</strong>
+            <span>Más cómodo en el taller y ahorra batería</span>
+          </span>
+          <input type="checkbox" class="fb-switch" [checked]="isDark" (change)="themeService.toggleDark()">
+        </label>
+        <button type="button" class="fila" (click)="go('/settings')">
+          <ion-icon name="settings-outline" class="icono" aria-hidden="true"></ion-icon>
+          <span class="fila-text">
+            <strong>Configuración</strong>
+            <span>Perfil, foto e impresión de tickets</span>
+          </span>
+          <ion-icon name="chevron-forward-outline" class="chev" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    </section>
+
+    <button type="button" class="fb-btn danger big block salir" (click)="logout()">
+      <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+      Cerrar sesión
+    </button>
+  </div>
+</ion-content>

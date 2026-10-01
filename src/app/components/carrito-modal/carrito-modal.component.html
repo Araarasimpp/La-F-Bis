@@ -1,127 +1,135 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-title>Carrito</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cerrar()" color="medium">Cerrar</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<div class="cart" [class.inline]="inline">
 
-<ion-content>
-  <div class="contenido">
-
-    <div *ngIf="ventas.carrito.length === 0" class="vacio">
-      El carrito está vacío
+  <header class="head">
+    <div class="head-text">
+      <h2 class="fb-title sm">Venta actual</h2>
+      <span class="fb-sub" *ngIf="unidades">{{ unidades }} {{ unidades === 1 ? 'artículo' : 'artículos' }}</span>
     </div>
+    <button *ngIf="ventas.carrito.length" type="button" class="fb-link danger" (click)="ventas.vaciarCarrito()">Vaciar</button>
+    <button *ngIf="!inline" type="button" class="fb-icon-btn plain sm" (click)="cerrar()" aria-label="Cerrar carrito">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </header>
 
-    <div class="items-lista">
-      <ion-card *ngFor="let item of ventas.carrito" class="card-carrito">
-        <ion-card-content class="item-layout">
-          <div class="info-item">
-            <h2>{{item.elemento}}</h2>
-            <p class="precio">${{item.precio * item.cantidad | number}}</p>
-          </div>
-
-          <div class="controles-cantidad">
-            <ion-button color="danger" size="small" (click)="ventas.disminuir(item)">-</ion-button>
-            <strong>{{item.cantidad}}</strong>
-            <ion-button color="success" size="small" (click)="ventas.aumentar(item)">+</ion-button>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    </div>
-
-    <ion-card class="card-total">
-      <ion-card-content>
-        <h2>Total</h2>
-        <h1>${{ventas.total | number}}</h1>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card class="card-metodo">
-      <ion-card-content>
-        <h2>Método de pago</h2>
-        <ion-segment [(ngModel)]="ventas.metodoPago" mode="ios">
-          <ion-segment-button value="efectivo">
-            <ion-label>Efectivo</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="transferencia">
-            <ion-label>Transferencia</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card *ngIf="ventas.metodoPago == 'efectivo'" class="card-efectivo">
-      <ion-card-content>
-        <ion-item lines="none" class="input-item">
-          <ion-label position="stacked">Pago recibido</ion-label>
-          <ion-input 
-            type="number" 
-            [(ngModel)]="ventas.pagoRecibido" 
-            (ionInput)="ventas.calcularCambio()" 
-            (input)="ventas.calcularCambio()" 
-            placeholder="Ingrese monto">
-          </ion-input>
-        </ion-item>
-
-        <div class="cambio-container">
-          <h2>Cambio</h2>
-          <h1>${{ventas.cambio | number}}</h1>
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card class="card-taller">
-      <ion-card-content>
-
-        <h2>🏍️ Orden de Taller (Opcional)</h2>
-
-        <ion-item lines="none" class="input-item">
-          <ion-label position="stacked">Placa de la moto</ion-label>
-          <ion-input
-            type="text"
-            placeholder="Ej: KUX84E"
-            [(ngModel)]="ventas.placaMoto"
-            style="text-transform: uppercase;">
-          </ion-input>
-        </ion-item>
-
-        <ion-item lines="none" class="checkbox-item">
-          <ion-checkbox
-            slot="start"
-            [(ngModel)]="ventas.esServicioTaller">
-          </ion-checkbox>
-
-          <ion-label class="checkbox-label">
-            Incluye servicio
-          </ion-label>
-        </ion-item>
-
-        <ion-item
-          *ngIf="ventas.esServicioTaller"
-          lines="none"
-          class="input-item">
-
-          <ion-label position="stacked">
-            Diagnóstico o trabajo realizado
-          </ion-label>
-
-          <ion-textarea
-            autoGrow="true"
-            rows="3"
-            placeholder="Describa el trabajo realizado..."
-            [(ngModel)]="ventas.descripcionMecanico">
-          </ion-textarea>
-
-        </ion-item>
-
-      </ion-card-content>
-    </ion-card>
-
-    <ion-button expand="block" class="btn-finalizar" (click)="finalizarVenta()">
-      Finalizar venta
-    </ion-button>
-
+  <div class="fb-empty" *ngIf="!ventas.carrito.length">
+    <ion-icon name="cart-outline"></ion-icon>
+    <strong>El carrito está vacío</strong>
+    <span>Toca un producto o escanea su código para agregarlo.</span>
   </div>
-</ion-content>
+
+  <div class="body" *ngIf="ventas.carrito.length">
+
+    <!-- Artículos -->
+    <div class="items">
+      <div class="line" *ngFor="let item of ventas.carrito">
+        <div class="line-info">
+          <span class="line-name">{{ item.elemento }}</span>
+          <span class="line-price">
+            $ {{ item.precio | number:'1.0-0' }} c/u ·
+            <strong>$ {{ item.precio * item.cantidad | number:'1.0-0' }}</strong>
+          </span>
+        </div>
+        <div class="fb-stepper">
+          <button type="button" (click)="ventas.disminuir(item)" [attr.aria-label]="'Quitar una unidad de ' + item.elemento">
+            <ion-icon [name]="item.cantidad === 1 ? 'trash-outline' : 'remove-outline'"></ion-icon>
+          </button>
+          <span class="qty">{{ item.cantidad }}</span>
+          <button
+            type="button"
+            class="plus"
+            (click)="ventas.aumentar(item)"
+            [disabled]="item.cantidad >= item.stock"
+            [attr.aria-label]="'Agregar una unidad de ' + item.elemento">
+            <ion-icon name="add-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="total">
+        <span>Total</span>
+        <strong class="fb-money">$ {{ ventas.total | number:'1.0-0' }}</strong>
+      </div>
+    </div>
+
+    <!-- Pago -->
+    <div class="fb-field">
+      <span>Método de pago</span>
+      <div class="fb-seg" role="group" aria-label="Método de pago">
+        <button type="button" [class.on]="ventas.metodoPago === 'efectivo'" [attr.aria-pressed]="ventas.metodoPago === 'efectivo'" (click)="setMetodo('efectivo')">
+          Efectivo
+        </button>
+        <button type="button" [class.on]="ventas.metodoPago === 'transferencia'" [attr.aria-pressed]="ventas.metodoPago === 'transferencia'" (click)="setMetodo('transferencia')">
+          Transferencia
+        </button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="ventas.metodoPago === 'efectivo'">
+      <div class="fb-grid-2">
+        <label class="fb-field">
+          <span>Pago recibido</span>
+          <input
+            class="money-input"
+            type="number"
+            inputmode="numeric"
+            placeholder="0"
+            [ngModel]="ventas.pagoRecibido"
+            (ngModelChange)="setPago($event)">
+        </label>
+
+        <div class="fb-field">
+          <span>{{ ventas.cambio < 0 ? 'Falta' : 'Cambio' }}</span>
+          <output class="cambio fb-money" [class.falta]="ventas.cambio < 0" aria-live="polite">
+            $ {{ (ventas.cambio < 0 ? -ventas.cambio : ventas.cambio) | number:'1.0-0' }}
+          </output>
+        </div>
+      </div>
+
+      <div class="quick" *ngIf="sugerencias.length">
+        <button type="button" class="fb-chip" *ngFor="let s of sugerencias; let i = index" (click)="setPago(s)">
+          {{ i === 0 ? 'Exacto' : '$ ' + (s | number:'1.0-0') }}
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Orden de taller -->
+    <section class="taller">
+      <div class="taller-head">
+        <span class="taller-icon"><ion-icon name="construct-outline"></ion-icon></span>
+        <div>
+          <h3>Orden de taller</h3>
+          <span>Opcional · queda en el historial de la moto</span>
+        </div>
+      </div>
+
+      <label class="fb-field">
+        <span>Placa de la moto</span>
+        <input
+          class="fb-plate"
+          type="text"
+          maxlength="7"
+          autocapitalize="characters"
+          autocomplete="off"
+          placeholder="ABC12D"
+          [ngModel]="ventas.placaMoto"
+          (ngModelChange)="setPlaca($event)">
+      </label>
+
+      <label class="fb-check">
+        <input type="checkbox" [(ngModel)]="ventas.esServicioTaller">
+        Incluye servicio de mano de obra
+      </label>
+
+      <label class="fb-field" *ngIf="ventas.esServicioTaller">
+        <span>Diagnóstico o trabajo realizado</span>
+        <textarea rows="3" placeholder="Describe el trabajo realizado" [(ngModel)]="ventas.descripcionMecanico"></textarea>
+      </label>
+    </section>
+
+    <button type="button" class="fb-btn primary big block finish" (click)="finalizarVenta()" [disabled]="ventas.procesando">
+      <ion-spinner *ngIf="ventas.procesando" name="crescent"></ion-spinner>
+      <span>{{ ventas.procesando ? 'Guardando…' : 'Finalizar venta' }}</span>
+      <strong class="fb-money" *ngIf="!ventas.procesando">$ {{ ventas.total | number:'1.0-0' }}</strong>
+    </button>
+  </div>
+</div>

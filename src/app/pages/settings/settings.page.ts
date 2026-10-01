@@ -1,43 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { IONIC_IMPORTS } from 'src/app/shared/ionic-imports';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { IONIC_IMPORTS } from 'src/app/shared/ionic-imports';
+
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { IonMenuButton } from '@ionic/angular/standalone';
-
-import { addIcons } from 'ionicons';
-
-import {
-  analyticsOutline,
-  cubeOutline,
-  cashOutline,
-  peopleOutline,
-  settingsOutline,
-  logOutOutline,
-  businessOutline,
-  receiptOutline,
-  personOutline,
-  moonOutline,
-  printOutline,
-  saveOutline,
-  cloudUploadOutline
-} from 'ionicons/icons';
-
-import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, ...IONIC_IMPORTS, IonMenuButton],
+  imports: [CommonModule, FormsModule, ...IONIC_IMPORTS],
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss']
 })
-
 export class SettingsPage implements OnInit {
 
   loading = false;
+  subiendo = false;
+  guardado = false;
 
   profile: any = {
     username: '',
@@ -45,43 +25,24 @@ export class SettingsPage implements OnInit {
     avatar_url: ''
   };
 
-  settings: any = {
-    ticket_auto: true
+  settings = {
+    // Antes siempre mostraba "activado"; ahora lee lo que se guardó
+    ticket_auto: localStorage.getItem('ticket_auto') !== 'false'
   };
 
   userId = '';
 
   constructor(
-    private router: Router,
     public supabaseService: SupabaseService,
-    public auth: AuthService,
-  ) {
-
-    addIcons({
-      analyticsOutline,
-      cubeOutline,
-      cashOutline,
-      peopleOutline,
-      settingsOutline,
-      saveOutline,
-      logOutOutline,
-      personOutline,
-      receiptOutline,
-      cloudUploadOutline
-    });
-
-  }
+    public auth: AuthService
+  ) {}
 
   async ngOnInit() {
     await this.cargarPerfil();
   }
 
   async cargarPerfil() {
-
-    const {
-      data: { user }
-    } = await this.supabaseService.supabase.auth.getUser();
-
+    const { data: { user } } = await this.supabaseService.supabase.auth.getUser();
     if (!user) return;
 
     this.userId = user.id;
@@ -97,44 +58,37 @@ export class SettingsPage implements OnInit {
       return;
     }
 
-    this.profile = {
-      ...data
-    };
-
+    this.profile = { ...data };
   }
 
   async onAvatarSelected(event: any) {
-
-    const file = event.target.files[0];
-
+    const file = event.target.files?.[0];
     if (!file) return;
 
-    const fileName = `avatar-${Date.now()}`;
+    this.subiendo = true;
+    const fileName = `avatar-${this.userId}-${Date.now()}`;
 
     const { error } = await this.supabaseService.supabase
       .storage
       .from('avatars')
-      .upload(fileName, file, {
-        upsert: true
-      });
+      .upload(fileName, file, { upsert: true });
+
+    this.subiendo = false;
 
     if (error) {
       console.error(error);
-      alert('Error subiendo avatar');
+      alert('Error subiendo la foto');
       return;
     }
 
-    const { data } = this.supabaseService.supabase
-      .storage
-      .from('avatars')
-      .getPublicUrl(fileName);
-
+    const { data } = this.supabaseService.supabase.storage.from('avatars').getPublicUrl(fileName);
     this.profile.avatar_url = data.publicUrl;
+    this.guardado = false;
   }
 
   async guardar() {
-
     this.loading = true;
+    this.guardado = false;
 
     const { error } = await this.supabaseService.supabase
       .from('profiles')
@@ -149,25 +103,14 @@ export class SettingsPage implements OnInit {
 
     if (error) {
       console.error(error);
-      alert('Error guardando');
+      alert(error.code === '23505' ? 'Ese nombre de usuario ya está en uso' : 'Error guardando');
       return;
     }
 
-    localStorage.setItem(
-      'ticket_auto',
-      this.settings.ticket_auto ? 'true' : 'false'
-    );
+    localStorage.setItem('ticket_auto', this.settings.ticket_auto ? 'true' : 'false');
 
-    alert('Configuración guardada ✅');
+    // Refresca nombre y foto en el resto de la app
+    await this.auth.loadUser();
+    this.guardado = true;
   }
-
-  go(path: string) {
-    this.router.navigateByUrl(path);
-  }
-
-  logout() {
-    localStorage.clear();
-    this.router.navigateByUrl('/');
-  }
-
 }

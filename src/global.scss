@@ -1,67 +1,119 @@
 /*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * La F Bis · estilos globales
+ * Sistema visual "taller": grafito, ámbar de señalización y tipografía condensada.
+ * Los colores viven en variables --fb-*; body.dark cambia al tema oscuro.
  */
 
-/* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+/* El modo oscuro lo controla ThemeService (clase ion-palette-dark en <html>) */
+@import "@ionic/angular/css/palettes/dark.class.css";
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* =========================================================
+   TOKENS
+   ========================================================= */
 
 :root {
-  --bg-main: #f5f6fa;
-  --bg-card: #ffffff;
-  --text-main: #111;
-  --text-secondary: #777;
-  --sidebar-bg: #ffffff;
+  --fb-font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --fb-font-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fb-font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  --fb-radius: 18px;
+  --fb-radius-sm: 12px;
+  --fb-tabbar-h: 68px;
+  --fb-rail-w: 96px;
+
+  /* Tema claro */
+  --fb-bg: #F3F1EB;
+  --fb-bar: #FFFFFF;
+  --fb-surface: #FFFFFF;
+  --fb-surface-2: #ECE9E1;
+  --fb-surface-3: #D6D2C6;
+  --fb-line: #DEDAD0;
+  --fb-text: #16171A;
+  --fb-muted: #5E6168;
+  --fb-faint: #8C8F96;
+  --fb-accent: #F5B400;
+  --fb-accent-ink: #16171A;
+  --fb-accent-text: #8A5C00;
+  --fb-accent-soft: #FFF1C2;
+  --fb-warn: #A3401C;
+  --fb-warn-bg: #FCE3D8;
+  --fb-ok: #1E6B45;
+  --fb-ok-bg: #DDF1E6;
+  --fb-info: #2F5BD3;
+  --fb-plate: #FFD400;
+  --fb-plate-ink: #111214;
+  --fb-shadow: 0 1px 2px rgba(22, 23, 26, 0.05), 0 8px 24px rgba(22, 23, 26, 0.06);
+  --fb-backdrop: rgba(17, 18, 20, 0.45);
+
+  --ion-font-family: var(--fb-font-body);
+  --ion-color-primary: #8A5C00;
+  --ion-color-primary-rgb: 138, 92, 0;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #795100;
+  --ion-color-primary-tint: #966c1a;
 }
 
 body.dark {
-  --bg-main: #1e1e1e;
-  --bg-card: #2c2c2c;
-  --text-main: #ffffff;
-  --text-secondary: #aaa;
-  --sidebar-bg: #2c2c2c;
+  --fb-bg: #111214;
+  --fb-bar: #16181B;
+  --fb-surface: #1B1D21;
+  --fb-surface-2: #24272C;
+  --fb-surface-3: #3A3E45;
+  --fb-line: #2E3238;
+  --fb-text: #F2F0EA;
+  --fb-muted: #A4A7AE;
+  --fb-faint: #8A8E96;
+  --fb-accent-ink: #111214;
+  --fb-accent-text: #F5B400;
+  --fb-accent-soft: #2A2410;
+  --fb-warn: #FF9F80;
+  --fb-warn-bg: #3A2620;
+  --fb-ok: #7FD6A6;
+  --fb-ok-bg: #1C3328;
+  --fb-info: #8FB3FF;
+  --fb-shadow: none;
+  --fb-backdrop: rgba(0, 0, 0, 0.6);
+
+  --ion-color-primary: #F5B400;
+  --ion-color-primary-rgb: 245, 180, 0;
+  --ion-color-primary-contrast: #111214;
+  --ion-color-primary-contrast-rgb: 17, 18, 20;
+  --ion-color-primary-shade: #d89e00;
+  --ion-color-primary-tint: #f6bc1a;
 }
 
-/* 🔥 CLAVE PARA IONIC */
-ion-app,
-body {
-  background: var(--bg-main);
-  color: var(--text-main);
+/* =========================================================
+   BASE
+   ========================================================= */
+
+html,
+body,
+ion-app {
+  background: var(--fb-bg);
+  color: var(--fb-text);
+  font-family: var(--fb-font-body);
 }
 
 ion-content {
-  --background: var(--bg-main);
-  --color: var(--text-main);
+  --background: var(--fb-bg);
+  --color: var(--fb-text);
+}
+
+ion-modal {
+  --background: var(--fb-bg);
+  --border-radius: 24px;
 }
 
 ion-router-outlet,
@@ -74,6 +126,774 @@ ion-router-outlet,
   display: block !important;
 }
 
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+:where(button, a, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--fb-accent-text);
+  outline-offset: 2px;
+}
+
+/* Espacio para la barra inferior (móvil) o el riel lateral (escritorio) */
+body.fb-has-tabbar ion-content {
+  --padding-bottom: calc(var(--fb-tabbar-h) + 28px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 992px) {
+  body.fb-has-tabbar ion-router-outlet {
+    left: var(--fb-rail-w) !important;
+  }
+
+  body.fb-has-tabbar ion-content {
+    --padding-bottom: 32px;
+  }
+}
+
+/* =========================================================
+   ESTRUCTURA DE PÁGINA
+   ========================================================= */
+
+.fb-page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 20px) 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fb-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fb-title {
+  margin: 0;
+  font-family: var(--fb-font-display);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--fb-text);
+
+  &.sm {
+    font-size: 26px;
+  }
+}
+
+.fb-sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fb-muted);
+}
+
+.fb-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fb-accent-text);
+}
+
+.fb-card {
+  background: var(--fb-surface);
+  border-radius: var(--fb-radius);
+  padding: 16px;
+  box-shadow: var(--fb-shadow);
+
+  &.outline {
+    background: transparent;
+    border: 1px solid var(--fb-line);
+    box-shadow: none;
+  }
+}
+
+.fb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fb-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.fb-money {
+  font-family: var(--fb-font-display);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+.fb-mono {
+  font-family: var(--fb-font-mono);
+}
+
+.fb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+.fb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: var(--fb-surface-2);
+  color: var(--fb-text);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  &.primary {
+    background: var(--fb-accent);
+    color: var(--fb-accent-ink);
+    font-weight: 700;
+  }
+
+  &.outline {
+    background: transparent;
+    border: 1.5px solid var(--fb-accent-text);
+    color: var(--fb-accent-text);
+    font-weight: 700;
+  }
+
+  &.ghost {
+    background: transparent;
+    border-color: var(--fb-line);
+  }
+
+  &.danger {
+    background: transparent;
+    border-color: var(--fb-warn-bg);
+    color: var(--fb-warn);
+  }
+
+  &.big {
+    min-height: 56px;
+    border-radius: 18px;
+    font-size: 17px;
+  }
+
+  &.block {
+    width: 100%;
+  }
+}
+
+.fb-icon-btn {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 1px solid var(--fb-line);
+  background: var(--fb-surface);
+  color: var(--fb-text);
+  font-size: 22px;
+
+  &.accent {
+    background: var(--fb-accent);
+    border-color: transparent;
+    color: var(--fb-accent-ink);
+  }
+
+  &.plain {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  &.sm {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    font-size: 20px;
+  }
+}
+
+.fb-link {
+  border: 0;
+  background: transparent;
+  min-height: 44px;
+  padding: 0 8px;
+  color: var(--fb-accent-text);
+  font-size: 14px;
+  font-weight: 600;
+
+  &.danger {
+    color: var(--fb-warn);
+  }
+}
+
+/* =========================================================
+   FORMULARIOS
+   ========================================================= */
+
+.fb-search {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--fb-line);
+  background: var(--fb-surface);
+  color: var(--fb-muted);
+
+  ion-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--fb-text);
+    font-size: 15px;
+    font-weight: 500;
+
+    &::placeholder {
+      color: var(--fb-faint);
+    }
+  }
+
+  &:focus-within {
+    border-color: var(--fb-accent-text);
+  }
+}
+
+.fb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+
+  > span,
+  .fb-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fb-muted);
+  }
+}
+
+.fb-input,
+.fb-field input:not([type='checkbox']):not(.fb-plate),
+.fb-field select,
+.fb-field textarea {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--fb-line);
+  background: var(--fb-surface);
+  color: var(--fb-text);
+  font-family: var(--fb-font-body);
+  font-size: 15px;
+  font-weight: 500;
+  outline: none;
+
+  &::placeholder {
+    color: var(--fb-faint);
+  }
+
+  &:focus {
+    border-color: var(--fb-accent-text);
+    box-shadow: 0 0 0 3px var(--fb-accent-soft);
+  }
+}
+
+.fb-field textarea {
+  height: auto;
+  padding: 10px 12px;
+  resize: vertical;
+  line-height: 1.4;
+}
+
+.fb-field input.mono,
+.fb-input.mono {
+  font-family: var(--fb-font-mono);
+  font-size: 14px;
+}
+
+.fb-section {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  > legend {
+    padding: 0;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--fb-accent-text);
+  }
+}
+
+.fb-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 500;
+
+  input[type='checkbox'] {
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    accent-color: #F5B400;
+  }
+}
+
+input[type='checkbox'].fb-switch {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  width: 52px;
+  height: 32px;
+  margin: 0;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--fb-surface-3);
+  transition: background 0.15s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: left 0.15s ease, background 0.15s ease;
+  }
+
+  &:checked {
+    background: var(--fb-accent);
+  }
+
+  &:checked::after {
+    left: 24px;
+    background: var(--fb-accent-ink);
+  }
+}
+
+.fb-seg {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid var(--fb-line);
+  background: var(--fb-surface);
+
+  button {
+    height: 40px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--fb-muted);
+    font-size: 14px;
+    font-weight: 600;
+
+    &.on {
+      background: var(--fb-text);
+      color: var(--fb-bg);
+      font-weight: 700;
+    }
+  }
+}
+
+.fb-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 -20px;
+  padding: 0 20px 2px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.fb-chip {
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--fb-line);
+  background: transparent;
+  color: var(--fb-text);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.on {
+    background: var(--fb-text);
+    border-color: var(--fb-text);
+    color: var(--fb-bg);
+    font-weight: 700;
+  }
+
+  &.warn:not(.on) {
+    color: var(--fb-warn);
+    border-color: var(--fb-warn-bg);
+  }
+}
+
+.fb-stepper {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 12px;
+  background: var(--fb-surface-2);
+
+  button {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--fb-text);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.plus {
+      color: var(--fb-accent-text);
+    }
+  }
+
+  .qty {
+    min-width: 28px;
+    text-align: center;
+    font-family: var(--fb-font-display);
+    font-size: 20px;
+    font-weight: 700;
+  }
+}
+
+/* =========================================================
+   PIEZAS
+   ========================================================= */
+
+.fb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--fb-surface-2);
+  color: var(--fb-muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &.warn {
+    background: var(--fb-warn-bg);
+    color: var(--fb-warn);
+  }
+
+  &.accent {
+    background: var(--fb-accent-soft);
+    color: var(--fb-accent-text);
+  }
+
+  &.ok {
+    background: var(--fb-ok-bg);
+    color: var(--fb-ok);
+  }
+
+  &.caps {
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+}
+
+/* Placa colombiana de moto */
+.fb-plate {
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 3px solid var(--fb-plate-ink);
+  outline: 2px solid var(--fb-plate);
+  background: var(--fb-plate);
+  color: var(--fb-plate-ink);
+  font-family: var(--fb-font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+input.fb-plate {
+  width: 100%;
+  max-width: 220px;
+  height: 56px;
+  font-size: 30px;
+
+  &::placeholder {
+    color: rgba(17, 18, 20, 0.45);
+  }
+
+  &:focus {
+    outline: 3px solid var(--fb-accent-text);
+  }
+}
+
+.fb-plate-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--fb-plate);
+  color: var(--fb-plate-ink);
+  font-family: var(--fb-font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.fb-thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--fb-surface-2);
+  color: var(--fb-faint);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+.fb-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 0;
+  background: var(--fb-surface-2);
+  color: var(--fb-accent-text);
+  font-family: var(--fb-font-display);
+  font-size: 22px;
+  font-weight: 700;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &.lg {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    font-size: 32px;
+    background: var(--fb-accent);
+    color: var(--fb-accent-ink);
+  }
+}
+
+.fb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--fb-muted);
+  font-size: 14px;
+
+  ion-icon {
+    font-size: 40px;
+    color: var(--fb-faint);
+  }
+
+  strong {
+    color: var(--fb-text);
+    font-size: 16px;
+  }
+}
+
+.fb-loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+/* =========================================================
+   HOJA EMERGENTE (formularios de producto y categoría)
+   ========================================================= */
+
+.fb-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--fb-backdrop);
+}
+
+.fb-sheet {
+  width: 100%;
+  max-width: 640px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 24px 24px 0 0;
+  background: var(--fb-bg);
+  color: var(--fb-text);
+  animation: fb-up 0.22s ease-out;
+
+  &.full {
+    height: 100%;
+    border-radius: 0;
+  }
+}
+
+.fb-sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 12px 20px;
+  border-bottom: 1px solid var(--fb-line);
+
+  .fb-title {
+    flex: 1;
+  }
+}
+
+.fb-sheet.full .fb-sheet-head {
+  padding-top: calc(env(safe-area-inset-top) + 12px);
+}
+
+.fb-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.fb-sheet-foot {
+  display: flex;
+  gap: 10px;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--fb-line);
+  background: var(--fb-bg);
+
+  .grow {
+    flex: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .fb-sheet-backdrop {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .fb-sheet,
+  .fb-sheet.full {
+    height: auto;
+    max-height: calc(100vh - 48px);
+    border-radius: 24px;
+  }
+
+  .fb-sheet.full .fb-sheet-head {
+    padding-top: 12px;
+  }
+}
+
+@keyframes fb-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* =========================================================
+   CALENDARIO (flatpickr)
+   ========================================================= */
+
 .calendar-wrapper {
   position: relative;
 }
@@ -82,92 +902,61 @@ ion-router-outlet,
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 99999;
+  z-index: 999;
 }
 
-/* CONTENEDOR */
 .flatpickr-calendar {
   width: 320px !important;
-  max-width: calc(100vw - 20px);
-  position: absolute;
+  max-width: calc(100vw - 40px);
+  padding: 12px;
   border-radius: 20px;
-  padding: 10px;
-  background: var(--bg-card);
-  color: var(--text-main);
-  z-index: 1000;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-  left: 0;
-  right: auto;
-  transform: none;
-}
+  border: 1px solid var(--fb-line);
+  background: var(--fb-surface);
+  color: var(--fb-text);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 
-@media (max-width: 768px) {
-
-  .flatpickr-calendar {
-
-    width: calc(100vw - 20px) !important;
-
-    left: 10px !important;
-
-    right: 10px !important;
-
-    top: 50px !important;
-
+  &::before,
+  &::after {
+    display: none;
   }
-
 }
 
-/* HEADER CUSTOM */
 .flatpickr-months {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
 }
 
-/* OCULTAR FLECHAS */
 .flatpickr-prev-month,
 .flatpickr-next-month {
   display: none !important;
 }
 
-/* MES / AÑO COMO BOTONES */
 .flatpickr-current-month {
   display: flex;
   gap: 10px;
-  width: 50%;
-  margin-top: 35px;
-}
+  width: 80%;
+  color: var(--fb-text);
 
-.flatpickr-current-month select,
-.flatpickr-current-month input {
-  background: var(--bg-color);
-  border: none;
-  border-radius: 10px;
-  width: 160px;
-  padding: 6px 10px;
-  font-weight: 600;
-  text-align: center;
-}
-
-/* DÍAS */
-.flatpickr-day {
-  width: calc(100% / 7);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 38px !important;
-  line-height: 38px !important; 
-  font-weight: 500;
-}
-
-/* Ocultar número duplicado */
-.flatpickr-day.hidden {
-  display: none;
+  .flatpickr-monthDropdown-months,
+  input.cur-year {
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--fb-surface-2);
+    color: var(--fb-text);
+    font-weight: 600;
+  }
 }
 
 .flatpickr-weekdays {
   display: flex;
+}
+
+.flatpickr-weekday {
+  font-size: 12px;
+  color: var(--fb-muted) !important;
+  text-align: center;
 }
 
 .flatpickr-days {
@@ -177,87 +966,61 @@ ion-router-outlet,
 .dayContainer {
   display: flex;
   flex-wrap: wrap;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
 }
 
-/* TEXTO DÍAS */
-.flatpickr-weekday {
-  margin: 10px;
-  font-size: 13px;
-  color: #9ca3af;
-  text-align: center;
-}
+.flatpickr-day {
+  max-width: none;
+  width: calc(100% / 7);
+  height: 40px !important;
+  line-height: 40px !important;
+  border: 0 !important;
+  border-radius: 10px;
+  color: var(--fb-text);
+  font-weight: 500;
 
-/* RANGO */
-.flatpickr-day.startRange,
-.flatpickr-day.endRange {
-  background: #ff3b3b !important;
-  color: white;
-}
+  &.prevMonthDay,
+  &.nextMonthDay {
+    color: var(--fb-faint);
+  }
 
-.flatpickr-day.inRange {
-  background: rgba(255, 59, 59, 0.2);
-}
+  &.today {
+    color: var(--fb-accent-text);
+    font-weight: 700;
+  }
 
-/* HOVER */
-.flatpickr-day:hover {
-  background: #ff3b3b;
-  color: white;
-}
+  &:hover {
+    background: var(--fb-surface-2);
+  }
 
-/* QUITAR ESTILOS FEOS */
-.flatpickr-day.today {
-  border: none;
-}
+  &.inRange {
+    background: var(--fb-accent-soft) !important;
+    box-shadow: none !important;
+  }
 
-/* FOOTER */
-.flatpickr-calendar::after {
-  content: "";
-  display: block;
-  height: 1px;
-  background: var(--bg-color);
-  margin: 12px 0;
-}
-
-.calendar-footer {
-  display: flex;
-  gap: 10px;
-}
-
-
-
-/* quitar días grises completamente */
-.flatpickr-day.prevMonthDay::after,
-.flatpickr-day.nextMonthDay::after {
-  content: "";
+  &.startRange,
+  &.endRange,
+  &.selected {
+    background: var(--fb-accent) !important;
+    color: var(--fb-accent-ink) !important;
+  }
 }
 
 .calendar-close-btn {
   position: absolute;
   top: 10px;
-  right: 15px;
-
-  width: 28px;
-  height: 28px;
-
-  border: none;
-  border-radius: 50%;
-
-  background: var(--bg-color);
-  border-radius: var(--shadow);
-  color: #333;
-
-  font-size: 14px;
-  cursor: pointer;
-
+  right: 12px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  transition: 0.2s;
-  z-index: 10;
-}
-
-.calendar-close-btn:hover {
-  background: #ef4444;
-  color: white;
+  border: 0;
+  border-radius: 10px;
+  background: var(--fb-surface-2);
+  color: var(--fb-text);
+  font-size: 14px;
 }

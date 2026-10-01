@@ -1,482 +1,282 @@
-
-body {
-  background: var(--bg-main);
-  color: var(--text-main);
+.warn-text {
+  color: var(--fb-warn);
+  font-weight: 600;
 }
 
-ion-content {
-  --background: var(--bg-main);
-}
-
-ion-app {
-  background: var(--bg-main);
-}
-
-.layout {
-  display: flex;
-  height: 100vh;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* MAIN */
-.main {
-
-  width: 100%;
-  min-height: 100%;
-  padding: 24px;
-
-  background: var(--bg-main);
-  color: var(--text-main);
-
-  overflow-y: auto;
-
-  position: relative;
-
-}
-
-.topbar {
-  display: flex;
-  justify-content: flex-start; /* Alineado al inicio para el menú hamburguesa */
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.toolbar{
-    display:flex;
-    gap:16px;
-    align-items:center;
-    margin-bottom:20px;
-}
-
-.group{
-    flex:1;
-}
-
-.fab{
-    width:56px;
-    height:56px;
-    border-radius: 12px;
-    background: rgb(76, 175, 239);
-}
-
-.scan-btn{
-  width:60px;
-  height:56px;
-  border-radius: 12px;
-  background: rgb(76, 175, 239);
-}
-
-@media (max-width:768px){
-
-.toolbar{
-    flex-direction: right;
-    align-items:stretch;
-}
-
-.fab{
-    width:20%;
-    height:40px;
-    border-radius:12px;
-}
-
-.scan-btn{
-  width:20%;
-  height:40px;
-  border-radius:12px;
-}
-}
-
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
-  gap:20px;
-}
-
-/* CARD */
-.card{
-  background: var(--bg-card);
-  border-radius: 16px;
-  padding: 15px;
-  box-shadow: var(--shadow);
-  transition: 0.3s;
-}
-
-.card:hover{
-  transform: translateY(-5px);
-}
-
-.card img{
-  width:100%;
-  aspect-ratio:1/1;
-  object-fit:cover;
-  border-radius:12px;
-}
-
-/* PRECIO */
-.price{
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 5px;
-}
-
-/* STOCK */
-.stock{
-  font-size: 13px;
-  margin-top: 5px;
-}
-
-.moto{
-  font-size: 13px;
-  margin-top: 5px;
-  font-style: italic;
-}
-
-.stock.low{
-  color: rgb(252, 49, 49);
-  font-weight: bold;
-}
-
-/* ACCIONES */
-.actions{
-  display: flex;
+.list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
-  margin-top: 20px;
 }
 
-.actions button{
-  border: none;
-  background: var(--bg-card);
-  color: var(--text-main);
-  padding: 12px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-  cursor: pointer;
+@media (min-width: 720px) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .list .fb-empty {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1240px) {
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.item {
   width: 100%;
-}
-
-.actions button:hover{
-  background: #4a6cf7;
-  color: white;
-}
-
-/* MODAL */
-.modal{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 20px;
+  gap: 12px;
   align-items: center;
-  z-index: 999;
+  padding: 12px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--fb-surface);
+  box-shadow: var(--fb-shadow);
+  color: var(--fb-text);
+  text-align: left;
+
+  &:active {
+    transform: scale(0.99);
+  }
 }
 
-.modal-content{
-  background: var(--bg-card);
-  padding: 20px;
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--fb-font-display);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.05;
+  text-transform: uppercase;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--fb-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &.fb-mono {
+    font-size: 11px;
+  }
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.price {
+  font-size: 19px;
+}
+
+.chevron {
+  font-size: 18px;
+  color: var(--fb-faint);
+}
+
+/* ----- Formulario ----- */
+
+.photo {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.photo-box {
+  width: 120px;
+  height: 120px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border-radius: 16px;
-  width: 90%;
-  max-width: 450px;
-  max-height: 90vh;
-  overflow-y: auto;
+  border: 1.5px dashed var(--fb-surface-3);
+  color: var(--fb-muted);
+  font-size: 12px;
+  font-weight: 600;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  ion-icon {
+    font-size: 28px;
+  }
+}
+
+.photo-actions {
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  .fb-btn {
+    flex: 1;
+  }
 }
 
-.modal-content button:hover{
-  background: #4a6cf7;
-  color: white;
-}
-
-.modal-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.modal-content::-webkit-scrollbar-thumb {
-  background: #444;
-  border-radius: 10px;
-}
-
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: #666;
-}
-
-.modal-actions{
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
-
-.modal-actions button{
-  padding: 10px 20px;
-  background: var(--bg-card);
-  color: var(--text-main);
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-  border: none;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.image-preview{
-  width: 100%;
-  height: 150px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.image-preview img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.image-preview{
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.image-preview:hover{
-  border-color: #4a6cf7;
-}
-
-/* ==========================================
-   🔍 COMBOBOX DE CATEGORÍA (modal producto)
-========================================== */
-.categoria-combo {
+.combo {
   position: relative;
 }
 
-.combo-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.combo-wrapper input {
-  width: 100%;
-  background: var(--bg-card);
-  border: 1px solid transparent;
-  border-radius: 10px;
-  padding: 10px 12px 10px 36px;
-  color: var(--text-main);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  outline: none;
-  transition: 0.2s;
-  box-sizing: border-box;
-}
-
-.combo-wrapper input:hover {
-  border: 1px solid #444;
-}
-
-.combo-wrapper input:focus {
-  border: 1px solid #4cafef;
-  box-shadow: 0 0 0 2px rgba(76, 175, 239, 0.2);
-}
-
-.combo-icon {
-  position: absolute;
-  left: 12px;
-  font-size: 15px;
-  color: #9e9ea7;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.combo-dropdown {
+.combo-list {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  max-height: 220px;
+  z-index: 20;
+  max-height: 240px;
   overflow-y: auto;
-  background: var(--bg-card);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-  z-index: 50;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--fb-line);
+  background: var(--fb-surface);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
 .combo-option {
-  padding: 10px 12px;
-  font-size: 14px;
-  color: var(--text-main);
-  cursor: pointer;
-  transition: 0.15s;
-}
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fb-text);
+  font-size: 15px;
+  text-align: left;
 
-.combo-option:hover {
-  background: #4a6cf7;
-  color: white;
-}
+  &:hover,
+  &.on {
+    background: var(--fb-surface-2);
+  }
 
-.combo-clear {
-  color: #ef4444;
-  font-weight: 600;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
+  &.on {
+    font-weight: 700;
+  }
 
-.combo-clear:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  &.clear {
+    color: var(--fb-warn);
+    font-weight: 600;
+  }
 }
 
 .combo-empty {
-  padding: 10px 12px;
-  font-size: 13px;
-  color: #9e9ea7;
-  text-align: center;
+  padding: 12px;
+  color: var(--fb-muted);
+  font-size: 14px;
 }
 
-.combo-dropdown::-webkit-scrollbar {
-  width: 6px;
-}
-
-.combo-dropdown::-webkit-scrollbar-thumb {
-  background: #444;
-  border-radius: 10px;
-}
-
-/* INPUT GROUP */
-.input-group {
+.precio {
   display: flex;
-  flex-direction: column;
-  font-size: 12px;
-  color: #aaa;
-}
-
-/* LABEL */
-.input-group label {
-  margin-bottom: 4px;
-  font-weight: 500;
-}
-
-/* INPUT BONITO */
-.input-group input,
-.input-group select {
-  background: var(--bg-card);
-  border: 1px solid transparent;
-  border-radius: 10px;
-  padding: 10px;
-  color: var(--text-main);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-  outline: none;
-  transition: 0.2s;
-}
-
-/* EFECTO HOVER */
-.input-group input:hover,
-.input-group select:hover {
-  border: 1px solid #444;
-}
-
-/* EFECTO FOCUS */
-.input-group input:focus,
-.input-group select:focus {
-  border: 1px solid #4cafef;
-  box-shadow: 0 0 0 2px rgba(76, 175, 239, 0.2);
-}
-
-/* BASE */
-.btn {
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-.image-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.image-buttons button {
-  padding: 10px 20px;
-  background: var(--bg-card);
-  color: var(--text-main);
-  border-radius: 10px;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.08);
-  border: none;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-/* PRIMARY */
-.btn.primary {
-  background: linear-gradient(135deg, #4cafef, #6a5acd);
-  color: white;
-}
-
-.btn.primary:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(76, 175, 239, 0.4);
-}
-
-/* GHOST */
-.btn.ghost {
-  background: transparent;
-  color: #aaa;
-}
-
-.btn.ghost:hover {
-  color: white;
-}
-
-.group {
-  display: flex;
-  line-height: 28px;
   align-items: center;
-  position: relative;
-  max-width: 190px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--fb-accent-soft);
+  background: var(--fb-surface);
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
 }
 
-.filtrar {
-  width: 100%;
-  height: 40px;
-  line-height: 28px;
-  padding: 0 1rem;
-  padding-left: 2.5rem;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  outline: none;
-  background-color: var(--bg-card);
-  color: #0d0c22;
-  transition: 0.3s ease;
+.precio-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fb-muted);
 }
 
-.filtrar::placeholder {
-  color: #9e9ea7;
+.precio-hint {
+  font-size: 12px;
+  color: var(--fb-muted);
 }
 
-.filtrar:focus,
-.filtrar:hover {
-  outline: none;
-  border-color: rgba(247, 127, 0, 0.4);
-  background-color: #fff;
-  box-shadow: 0 0 0 4px rgb(247 127 0 / 10%);
+.precio-input {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--fb-accent-text);
+  font-family: var(--fb-font-display);
+  font-size: 28px;
+  font-weight: 700;
+
+  input {
+    width: 150px;
+    border: 0;
+    border-bottom: 2px solid var(--fb-line);
+    outline: none;
+    background: transparent;
+    color: var(--fb-accent-text);
+    font-family: var(--fb-font-display);
+    font-size: 32px;
+    font-weight: 700;
+    text-align: right;
+
+    &:focus {
+      border-bottom-color: var(--fb-accent-text);
+    }
+  }
 }
 
-.icon {
-  position: absolute;
-  left: 1rem;
-  fill: #9e9ea7;
-  width: 1rem;
-  height: 1rem;
+.stock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px 10px 16px;
+  border-radius: 16px;
+  background: var(--fb-surface);
+
+  label {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  input.qty {
+    width: 56px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--fb-text);
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}
+
+.danger-icon {
+  color: var(--fb-warn);
+}
+
+.fb-sheet-foot ion-spinner {
+  width: 18px;
+  height: 18px;
+  color: var(--fb-accent-ink);
 }

@@ -1,128 +1,132 @@
-/* MAIN */
-.main {
-  width: 100%;
-  min-height: 100%;
-  padding: 24px;
-  background: var(--bg-main);
-  color: var(--text-main);
-  overflow-y: auto;
-  position: relative;
+.narrow {
+  max-width: 720px;
 }
 
-.topbar {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-/* TOOLBAR (Buscador) */
-.toolbar {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 24px;
-  width: 100%;
-}
-
-.group {
+.buscador {
   display: flex;
   align-items: center;
-  background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: 8px;
-  padding: 8px 12px;
-  flex: 1;
+  gap: 10px;
+  padding: 12px;
+
+  .fb-plate {
+    flex: 1;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .fb-btn {
+    min-height: 56px;
+  }
 }
 
-.group .icon {
-  font-size: 20px;
-  margin-right: 8px;
-  color: var(--text-muted, #888888);
-}
-
-.filtrar {
-  border: none;
-  background: transparent;
-  outline: none;
-  width: 100%;
-  font-size: 16px;
-  color: var(--text-main);
-}
-
-.scan-btn {
-  background: var(--button-primary, #3880ff);
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  height: 42px;
-}
-
-/* GRID Y CARDS (Igual a tus productos) */
-.grid {
+.stats {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.card {
-  background: var(--bg-card, #ffffff);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--border-color, #ebebeb);
-  display: flex;
-  flex-direction: column;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 
-.card-header-date {
-  border-bottom: 1px solid var(--border-color, #f0f0f0);
-  padding-bottom: 6px;
-  margin-bottom: 4px;
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+
+  span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--fb-muted);
+  }
+
+  strong {
+    font-size: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
-.card h3 {
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 12px;
+    padding-bottom: 18px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 9px;
+      top: 20px;
+      bottom: 0;
+      width: 2px;
+      background: var(--fb-line);
+    }
+
+    &:last-child::before {
+      display: none;
+    }
+  }
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  margin: 6px 0 0 4px;
+  border-radius: 50%;
+  background: var(--fb-surface-3);
+
+  &.first {
+    background: var(--fb-accent);
+  }
+}
+
+.visit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.visit-top {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+
+  strong {
+    font-size: 20px;
+  }
+}
+
+.date {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fb-muted);
+}
+
+.work {
   margin: 0;
   font-size: 16px;
-  font-weight: bold;
-  color: var(--text-main);
+  font-weight: 600;
+  line-height: 1.35;
 }
 
-.card p {
+.parts {
   margin: 0;
-  font-size: 14px;
-  color: var(--text-muted, #666666);
-}
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--fb-muted);
 
-.service-desc {
-  background: var(--bg-main, #f9f9f9);
-  padding: 8px;
-  border-radius: 6px;
-  font-style: italic;
-}
-
-/* Formato tipo Badge/Etiqueta que usas en Moto */
-.moto {
-  display: inline-block;
-  background: var(--bg-tag, #e8f0fe);
-  color: var(--text-tag, #1a73e8);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: 4px;
-  margin-right: 4px;
-}
-
-.price {
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--color-success, #2dd36f);
-  margin-top: auto; /* Empuja el precio al fondo de la tarjeta */
-  text-align: right;
+  span {
+    color: var(--fb-faint);
+  }
 }
