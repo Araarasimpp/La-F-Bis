@@ -67,7 +67,8 @@
 
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* En pantallas angostas pasa a dos columnas para no cortar las cifras */
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   gap: 8px;
   margin-top: 8px;
   padding-top: 12px;
@@ -86,7 +87,7 @@
   }
 
   strong {
-    font-size: 22px;
+    font-size: clamp(15px, 4.6vw, 22px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -178,6 +179,21 @@
   flex-shrink: 0;
 }
 
+@media (max-width: 380px) {
+  .donut {
+    gap: 14px;
+  }
+
+  .donut-box {
+    width: 120px;
+    height: 120px;
+  }
+
+  .donut-center strong {
+    font-size: 22px;
+  }
+}
+
 .donut-center {
   position: absolute;
   inset: 0;
@@ -200,6 +216,7 @@
 
 .legend {
   flex: 1;
+  min-width: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -222,7 +239,10 @@
   strong {
     grid-column: 2;
     font-family: var(--fb-font-display);
-    font-size: 20px;
+    font-size: clamp(16px, 5vw, 20px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

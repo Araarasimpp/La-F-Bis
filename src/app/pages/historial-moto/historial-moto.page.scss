@@ -38,7 +38,7 @@
   }
 
   strong {
-    font-size: 24px;
+    font-size: clamp(18px, 6vw, 24px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -95,6 +95,7 @@
 .visit-top {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;

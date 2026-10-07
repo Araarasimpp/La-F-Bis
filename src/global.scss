@@ -156,12 +156,26 @@ body.fb-has-tabbar ion-content {
    ========================================================= */
 
 .fb-page {
+  box-sizing: border-box;
   max-width: 1120px;
+  min-width: 0;
+  overflow-x: clip;
   margin: 0 auto;
   padding: calc(env(safe-area-inset-top) + 20px) 20px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+@media (max-width: 380px) {
+  .fb-page {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .fb-title {
+    font-size: 30px;
+  }
 }
 
 .fb-header {
@@ -231,6 +245,7 @@ body.fb-has-tabbar ion-content {
 .fb-money {
   font-family: var(--fb-font-display);
   font-weight: 700;
+  white-space: nowrap;
   letter-spacing: -0.005em;
 }
 
@@ -559,12 +574,27 @@ input[type='checkbox'].fb-switch {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fb-surface-3) transparent;
   margin: 0 -20px;
-  padding: 0 20px 2px;
+  padding: 0 20px 8px;
 
   &::-webkit-scrollbar {
-    display: none;
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: var(--fb-surface-3);
+  }
+}
+
+@media (max-width: 380px) {
+  .fb-chips {
+    margin: 0 -16px;
+    padding: 0 16px 8px;
   }
 }
 
@@ -680,9 +710,11 @@ input[type='checkbox'].fb-switch {
 
 input.fb-plate {
   width: 100%;
+  min-width: 0;
   max-width: 220px;
   height: 56px;
-  font-size: 30px;
+  padding: 0 6px;
+  font-size: clamp(22px, 7vw, 30px);
 
   &::placeholder {
     color: rgba(17, 18, 20, 0.3);
@@ -842,7 +874,9 @@ input.fb-plate {
 
 .fb-sheet-body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -850,6 +884,7 @@ input.fb-plate {
 }
 
 .fb-sheet-foot {
+  flex-shrink: 0;
   display: flex;
   gap: 10px;
   padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
@@ -859,6 +894,11 @@ input.fb-plate {
   .grow {
     flex: 1;
   }
+}
+
+/* Con un formulario abierto la barra inferior tapaba sus botones (Guardar, Cancelar…) */
+body:has(.fb-sheet-backdrop) app-tab-bar {
+  display: none;
 }
 
 @media (min-width: 768px) {
@@ -871,6 +911,7 @@ input.fb-plate {
   .fb-sheet.full {
     height: auto;
     max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
     border-radius: 24px;
   }
 
@@ -980,6 +1021,8 @@ input.fb-plate {
     flex-shrink: 0;
 
     input.cur-year {
+      width: 100%;
+      box-sizing: border-box;
       height: 40px;
       padding: 0 10px !important;
       border: 0;
